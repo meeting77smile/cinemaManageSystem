@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/cinema_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://118.178.229.132:3307/cinema_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: 2054865827
   mvc:
@@ -36,7 +36,8 @@ knife4j:
     language: zh-CN
 
 server:
-  port: 8080
+  port: 9001
+  address: 0.0.0.0
 
 # JWT配置
 jwt:

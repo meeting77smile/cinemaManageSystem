@@ -430,6 +430,7 @@
     </footer>
 
     <script>
+        const API_BASE = 'http://118.178.229.132:9001';
         // DOM元素
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('userAvatar');
@@ -547,7 +548,7 @@
                 const token = localStorage.getItem('token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
-                const response = await fetch('http://localhost:8080/api/cinemas', {
+                const response = await fetch(`${API_BASE}/api/cinemas`, {
                     headers
                 });
                 

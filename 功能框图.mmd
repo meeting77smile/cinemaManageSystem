@@ -1,0 +1,26 @@
+graph TD
+  A[用户] --> B1[注册/登录/注销]
+  A --> B2[个人信息管理]
+  A --> B3[购票与订单管理]
+  A --> B4[影院评价]
+  B3 --> C1[电影浏览]
+  B3 --> C2[场次选择]
+  B3 --> C3[选座购票]
+  B3 --> C4[订单查询]
+
+  D[管理员] --> E1[影院管理]
+  D --> E2[影厅管理]
+  D --> E3[电影管理]
+  D --> E4[排片管理]
+  D --> E5[座位管理]
+  D --> E6[用户管理]
+  D --> E7[订单管理]
+  D --> E8[评价管理]
+
+  F[系统功能] --> G1[权限控制]
+  F --> G2[登录校验]
+  F --> G3[异常处理]
+
+  style A fill:#f9f,stroke:#333,stroke-width:1px
+  style D fill:#bbf,stroke:#333,stroke-width:1px
+  style F fill:#bfb,stroke:#333,stroke-width:1px 

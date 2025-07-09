@@ -77,4 +77,9 @@ public interface SeatService extends IService<Seat> {
      * @return 锁定结果，key为座位ID，value为是否锁定成功
      */
     Map<Integer, Boolean> lockSeats(Integer showtimeId, List<Integer> seatIds);
+
+    /**
+     * 自动选座
+     */
+    Seat autoSelectSeat(Integer showtimeId);
 }

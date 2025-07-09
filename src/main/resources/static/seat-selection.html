@@ -641,7 +641,9 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const API_BASE = 'http://118.178.229.132:9001';
         // DOM元素
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('userAvatar');
@@ -755,7 +757,7 @@
                 `;
                 
                 // 获取场次详情
-                const showtimeResponse = await fetch(`http://localhost:8080/api/showtimes/${showtimeId}`, {
+                const showtimeResponse = await fetch(`${API_BASE}/api/showtimes/${showtimeId}`, {
                     mode: 'cors',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -768,7 +770,7 @@
                     const showtime = showtimeResult.data;
                     
                     // 获取可用座位
-                    const seatsResponse = await fetch(`http://localhost:8080/api/showtimes/${showtimeId}/seats`, {
+                    const seatsResponse = await fetch(`${API_BASE}/api/showtimes/${showtimeId}/seats`, {
                         mode: 'cors',
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -904,8 +906,30 @@
             
             // 添加事件监听
             document.getElementById('autoSelectBtn').addEventListener('click', () => {
-                const count = parseInt(document.getElementById('ticketCount').value);
-                handleAutoSelect(showtime.showtimeId, count);
+                // 获取当前场次ID
+                const showtimeId = window.showtimeId || (typeof showtime !== 'undefined' ? showtime.showtimeId : null);
+                if (!showtimeId) {
+                    alert('未获取到场次信息');
+                    return;
+                }
+                // 调用后端自动选座接口
+                axios.get(`${API_BASE}/api/seats/auto-select?showtimeId=${showtimeId}`)
+                  .then(res => {
+                    if (res.data.code === 200 && res.data.data) {
+                      const seat = res.data.data;
+                      // 取消所有已选
+                      document.querySelectorAll('.seat.selected').forEach(seatEl => seatEl.classList.remove('selected'));
+                      // 选中目标座位
+                      const seatEl = document.querySelector(`.seat[data-seat-id="${seat.seatId}"]`);
+                      if (seatEl) {
+                        seatEl.classList.add('selected');
+                      }
+                      updateConfirmButtonState();
+                      showSeatsSummary();
+                    } else {
+                      alert(res.data.message || '没有可用座位');
+                    }
+                  });
             });
             
             document.getElementById('confirmSelectionBtn').addEventListener('click', () => {
@@ -1063,7 +1087,7 @@
                 showMessage('正在自动选座...', 'info');
                 
                 // 调用自动选座接口
-                const response = await fetch(`http://localhost:8080/api/showtimes/${showtimeId}/seats/auto-select?userId=${user.userId}&count=${count}`, {
+                const response = await fetch(`${API_BASE}/api/showtimes/${showtimeId}/seats/auto-select?userId=${user.userId}&count=${count}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -1125,7 +1149,7 @@
                 showMessage('正在处理...', 'info');
                 
                 // 锁定座位
-                const lockResponse = await fetch(`http://localhost:8080/api/showtimes/${showtimeId}/seats/lock`, {
+                const lockResponse = await fetch(`${API_BASE}/api/showtimes/${showtimeId}/seats/lock`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1144,7 +1168,7 @@
                     
                     if (allLocked) {
                         // 调用手动选座接口
-                        const response = await fetch(`http://localhost:8080/api/tickets/manual?userId=${user.userId}&showtimeId=${showtimeId}`, {
+                        const response = await fetch(`${API_BASE}/api/tickets/manual?userId=${user.userId}&showtimeId=${showtimeId}`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

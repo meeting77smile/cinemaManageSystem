@@ -7,11 +7,14 @@ import com.cinema.common.exception.BusinessException;
 import com.cinema.entity.Hall;
 import com.cinema.entity.Movie;
 import com.cinema.entity.Showtime;
+import com.cinema.entity.Ticket;
 import com.cinema.mapper.ShowtimeMapper;
 import com.cinema.service.HallService;
 import com.cinema.service.MovieService;
 import com.cinema.service.ShowtimeService;
+import com.cinema.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,10 @@ public class ShowtimeServiceImpl extends ServiceImpl<ShowtimeMapper, Showtime> i
 
     @Autowired
     private HallService hallService;
+
+    @Autowired
+    @Lazy
+    private TicketService ticketService;
 
     @Override
     public Page<Showtime> pageShowtimes(Page<Showtime> page, Integer movieId, Integer hallId, LocalDateTime startTime, LocalDateTime endTime) {
@@ -147,6 +154,12 @@ public class ShowtimeServiceImpl extends ServiceImpl<ShowtimeMapper, Showtime> i
         if (showtime == null) {
             throw new BusinessException("放映场次不存在");
         }
+        
+        // 删除场次相关的票务信息
+        LambdaQueryWrapper<Ticket> ticketWrapper = new LambdaQueryWrapper<>();
+        ticketWrapper.eq(Ticket::getShowtimeId, id);
+        ticketService.remove(ticketWrapper);
+        
         return removeById(id);
     }
 

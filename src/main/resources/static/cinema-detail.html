@@ -754,7 +754,7 @@
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
                 console.log(`正在获取影院详情，ID: ${cinemaId}`);
-                const response = await fetch(`http://localhost:8080/api/cinemas/${cinemaId}`, {
+                const response = await fetch(`http://118.178.229.132:9001/api/cinemas/${cinemaId}`, {
                     mode: 'cors',
                     headers
                 });
@@ -782,7 +782,7 @@
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
                 console.log(`正在获取影厅列表，影院ID: ${cinemaId}`);
-                const response = await fetch(`http://localhost:8080/api/cinemas/${cinemaId}/halls`, {
+                const response = await fetch(`http://118.178.229.132:9001/api/cinemas/${cinemaId}/halls`, {
                     mode: 'cors',
                     headers
                 });
@@ -810,7 +810,7 @@
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
                 console.log(`正在获取影院评价，影院ID: ${cinemaId}`);
-                const response = await fetch(`http://localhost:8080/api/cinemas/${cinemaId}/reviews`, {
+                const response = await fetch(`http://118.178.229.132:9001/api/cinemas/${cinemaId}/reviews`, {
                     mode: 'cors',
                     headers
                 });
@@ -843,7 +843,7 @@
                 const userInfoData = localStorage.getItem('userInfo');
                 const user = JSON.parse(userInfoData);
                 
-                const response = await fetch(`http://localhost:8080/api/cinemas/${cinemaId}/reviews`, {
+                const response = await fetch(`http://118.178.229.132:9001/api/cinemas/${cinemaId}/reviews`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {

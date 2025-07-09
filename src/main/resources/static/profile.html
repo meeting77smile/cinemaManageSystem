@@ -1349,6 +1349,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const API_BASE = 'http://118.178.229.132:9001';
         // DOM元素
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('userAvatar');
@@ -1544,7 +1545,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:8080/api/users/info', {
+                const response = await fetch(`${API_BASE}/api/users/info`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1611,7 +1612,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:8080/api/users/password', {
+                const response = await fetch(`${API_BASE}/api/users/password`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1656,7 +1657,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:8080/api/users/recharge', {
+                const response = await fetch(`${API_BASE}/api/users/recharge`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1749,7 +1750,7 @@
                 `;
                 
                 // 构建查询参数
-                let url = `http://localhost:8080/api/users/${currentUser.userId}/tickets`;
+                let url = `${API_BASE}/api/users/${currentUser.userId}/tickets`;
                 const params = [];
                 
                 if (status) {
@@ -1906,7 +1907,7 @@
         // 处理支付票务
         async function handlePayTicket(ticketId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/pay`, {
+                const response = await fetch(`${API_BASE}/api/tickets/${ticketId}/pay`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1943,7 +1944,7 @@
         // 处理取消票务
         async function handleCancelTicket(ticketId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/cancel`, {
+                const response = await fetch(`${API_BASE}/api/tickets/${ticketId}/cancel`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -1990,7 +1991,7 @@
                 `;
                 
                 // 获取观影历史
-                const response = await fetch(`http://localhost:8080/api/users/${currentUser.userId}/history`, {
+                const response = await fetch(`${API_BASE}/api/users/${currentUser.userId}/history`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -2086,7 +2087,7 @@
             
             try {
                 // 获取统计数据
-                const response = await fetch('http://localhost:8080/api/admin/statistics', {
+                const response = await fetch(`${API_BASE}/api/admin/statistics`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -2134,7 +2135,7 @@
                 `;
                 
                 // 构建查询参数
-                let url = 'http://localhost:8080/api/movies';
+                let url = `${API_BASE}/api/movies`;
                 const params = [];
                 
                 if (title) {
@@ -2251,7 +2252,7 @@
             
             try {
                 // 获取用户列表
-                const response = await fetch('http://localhost:8080/api/admin/users', {
+                const response = await fetch(`${API_BASE}/api/admin/users`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -2327,7 +2328,7 @@
         // 更新用户状态
         async function updateUserStatus(userId, status) {
             try {
-                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/status?status=${status}`, {
+                const response = await fetch(`${API_BASE}/api/admin/users/${userId}/status?status=${status}`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -2399,7 +2400,7 @@
             if (!userInfo) return;
             const userId = userInfo.userId;
             try {
-                const response = await fetch(`/api/users/info?userId=${userId}`, {
+                const response = await fetch(`${API_BASE}/api/users/info?userId=${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }

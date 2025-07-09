@@ -220,6 +220,12 @@ public class UserController {
         return Result.success(voList);
     }
     
+    @ApiOperation("获取用户观影历史")
+    @GetMapping("/{userId}/history")
+    public Result<List<TicketVO>> getUserHistory(@ApiParam("用户ID") @PathVariable Integer userId) {
+        return getUserTickets(userId);
+    }
+    
     @ApiOperation("修改密码")
     @PutMapping("/password")
     public Result<Void> updatePassword(@RequestBody Map<String, Object> params) {

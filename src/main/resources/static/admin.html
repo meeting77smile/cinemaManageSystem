@@ -227,6 +227,7 @@
                                 <th>演员</th>
                                 <th>时长</th>
                                 <th>上映日期</th>
+                                <th>状态</th>
                                 <th>海报</th>
                                 <th>操作</th>
                             </tr>
@@ -384,6 +385,14 @@
                             <label for="moviePoster" class="form-label">海报 URL</label>
                             <input type="url" class="form-control" id="moviePoster" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="movieStatus" class="form-label">电影状态</label>
+                            <select class="form-control" id="movieStatus" required>
+                                <option value="SHOWING">上映中</option>
+                                <option value="ENDING">即将下架</option>
+                                <option value="ENDED">已下架</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -508,6 +517,14 @@
                             <label for="editMoviePoster" class="form-label">海报 URL</label>
                             <input type="url" class="form-control" id="editMoviePoster" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="editMovieStatus" class="form-label">电影状态</label>
+                            <select class="form-control" id="editMovieStatus" required>
+                                <option value="SHOWING">上映中</option>
+                                <option value="ENDING">即将下架</option>
+                                <option value="ENDED">已下架</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -620,12 +637,50 @@
         </div>
     </div>
 
+    <!-- 查看影厅列表模态框 -->
+    <div class="modal fade" id="viewHallsModal" tabindex="-1" aria-labelledby="viewHallsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewHallsModalLabel">影厅列表</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6 id="viewHallsCinemaName"></h6>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>影厅名称</th>
+                                    <th>容量</th>
+                                    <th>可用座位</th>
+                                    <th>类型</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hallList">
+                                <!-- 影厅列表将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const API_BASE = 'http://118.178.229.132:9001';
         // 获取统计数据
         function loadStatistics() {
-            axios.get('http://localhost:8080/api/admin/statistics')
+            axios.get(`${API_BASE}/api/admin/statistics`)
                 .then(response => {
                     const data = response.data.data;
                     document.getElementById('userCount').textContent = data.userCount || 0;
@@ -642,7 +697,7 @@
 
         // 加载影院列表
         function loadCinemas() {
-            axios.get('http://localhost:8080/api/cinemas')
+            axios.get(`${API_BASE}/api/cinemas`)
                 .then(response => {
                     const cinemas = response.data.data || [];
                     const cinemaList = document.getElementById('cinemaList');
@@ -660,6 +715,7 @@
                                 <button class="btn btn-sm btn-outline-primary me-1" onclick="editCinema(${cinema.cinemaId})">编辑</button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteCinema(${cinema.cinemaId})">删除</button>
                                 <button class="btn btn-sm btn-success" onclick="openAddHallModal(${cinema.cinemaId}, '${cinema.name}')">添加影厅</button>
+                                <button class="btn btn-sm btn-info" onclick="viewCinemaHalls(${cinema.cinemaId}, '${cinema.name}')">查看影厅</button>
                             </td>
                         `;
                         cinemaList.appendChild(row);
@@ -672,13 +728,14 @@
 
         // 加载电影列表
         function loadMovies() {
-            axios.get('http://localhost:8080/api/movies')
+            axios.get(`${API_BASE}/api/movies`)
                 .then(response => {
                     const movies = response.data.data || [];
                     const movieList = document.getElementById('movieList');
                     movieList.innerHTML = '';
                     
                     movies.forEach(movie => {
+                        const statusBadge = getMovieStatusBadge(movie.status);
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${movie.movieId}</td>
@@ -687,6 +744,7 @@
                             <td>${movie.actors}</td>
                             <td>${movie.duration}分钟</td>
                             <td>${movie.releaseDate}</td>
+                            <td>${statusBadge}</td>
                             <td><img src="${movie.posterUrl || 'https://via.placeholder.com/50'}" alt="Poster" style="max-width: 50px;"></td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary me-1" onclick="editMovie(${movie.movieId})">编辑</button>
@@ -703,7 +761,7 @@
 
         // 加载场次列表
         function loadShowtimes() {
-            axios.get('http://localhost:8080/api/showtimes/page?current=1&size=50')
+            axios.get(`${API_BASE}/api/showtimes/page?current=1&size=50`)
                 .then(response => {
                     const showtimes = response.data.data.records || [];
                     const showtimeList = document.getElementById('showtimeList');
@@ -734,7 +792,7 @@
 
         // 加载用户列表
         function loadUsers() {
-            axios.get('http://localhost:8080/api/admin/users')
+            axios.get(`${API_BASE}/api/admin/users`)
                 .then(response => {
                     const users = response.data.data || [];
                     const userList = document.getElementById('userList');
@@ -769,7 +827,7 @@
 
         // 加载订单列表
         function loadTickets() {
-            axios.get('http://localhost:8080/api/tickets/page?current=1&size=50')
+            axios.get(`${API_BASE}/api/tickets/page?current=1&size=50`)
                 .then(response => {
                     const tickets = response.data.data.records || [];
                     const ticketList = document.getElementById('ticketList');
@@ -802,6 +860,16 @@
                 .catch(error => {
                     console.error('获取订单列表失败:', error);
                 });
+        }
+
+        // 获取电影状态徽章
+        function getMovieStatusBadge(status) {
+            switch(status) {
+                case 'SHOWING': return '<span class="badge bg-success">上映中</span>';
+                case 'ENDING': return '<span class="badge bg-warning">即将下架</span>';
+                case 'ENDED': return '<span class="badge bg-secondary">已下架</span>';
+                default: return '<span class="badge bg-light text-dark">未知</span>';
+            }
         }
 
         // 场次状态判断函数
@@ -846,7 +914,7 @@
             const action = newStatus === 'ACTIVE' ? '启用' : '禁用';
             
             if (confirm(`确定要${action}该用户吗？`)) {
-                axios.put(`http://localhost:8080/api/admin/users/${userId}/status?status=${newStatus}`)
+                axios.put(`${API_BASE}/api/admin/users/${userId}/status?status=${newStatus}`)
                     .then(response => {
                         alert(`${action}用户成功`);
                         loadUsers();
@@ -861,7 +929,7 @@
         // 删除影院
         function deleteCinema(cinemaId) {
             if (confirm('确定要删除该影院吗？')) {
-                axios.delete(`http://localhost:8080/api/cinemas/${cinemaId}`)
+                axios.delete(`${API_BASE}/api/cinemas/${cinemaId}`)
                     .then(response => {
                         alert('删除影院成功');
                         loadCinemas();
@@ -876,7 +944,7 @@
         // 删除电影
         function deleteMovie(movieId) {
             if (confirm('确定要删除该电影吗？')) {
-                axios.delete(`http://localhost:8080/api/movies/${movieId}`)
+                axios.delete(`${API_BASE}/api/movies/${movieId}`)
                     .then(response => {
                         alert('删除电影成功');
                         loadMovies();
@@ -891,7 +959,7 @@
         // 删除场次
         function deleteShowtime(showtimeId) {
             if (confirm('确定要删除该场次吗？')) {
-                axios.delete(`http://localhost:8080/api/showtimes/${showtimeId}`)
+                axios.delete(`${API_BASE}/api/showtimes/${showtimeId}`)
                     .then(response => {
                         alert('删除场次成功');
                         loadShowtimes();
@@ -905,7 +973,7 @@
 
         // 编辑影院
         function editCinema(cinemaId) {
-            axios.get(`http://localhost:8080/api/cinemas/${cinemaId}`)
+            axios.get(`${API_BASE}/api/cinemas/${cinemaId}`)
                 .then(response => {
                     const cinema = response.data.data;
                     document.getElementById('editCinemaId').value = cinema.cinemaId;
@@ -924,7 +992,7 @@
 
         // 编辑电影
         function editMovie(movieId) {
-            axios.get(`http://localhost:8080/api/movies/${movieId}`)
+            axios.get(`${API_BASE}/api/movies/${movieId}`)
                 .then(response => {
                     const movie = response.data.data;
                     document.getElementById('editMovieId').value = movie.movieId;
@@ -934,6 +1002,7 @@
                     document.getElementById('editMovieDuration').value = movie.duration;
                     document.getElementById('editMovieReleaseDate').value = movie.releaseDate;
                     document.getElementById('editMoviePoster').value = movie.posterUrl || '';
+                    document.getElementById('editMovieStatus').value = movie.status || 'SHOWING';
                     
                     const modal = new bootstrap.Modal(document.getElementById('editMovieModal'));
                     modal.show();
@@ -946,7 +1015,7 @@
 
         // 编辑场次
         function editShowtime(showtimeId) {
-            axios.get(`http://localhost:8080/api/showtimes/${showtimeId}`)
+            axios.get(`${API_BASE}/api/showtimes/${showtimeId}`)
                 .then(response => {
                     const showtime = response.data.data;
                     document.getElementById('editShowtimeId').value = showtime.showtimeId;
@@ -977,7 +1046,7 @@
 
         // 查看订单详情
         function viewTicketDetail(ticketId) {
-            axios.get(`http://localhost:8080/api/tickets/${ticketId}`)
+            axios.get(`${API_BASE}/api/tickets/${ticketId}`)
                 .then(response => {
                     const ticket = response.data.data;
                     const detailContent = document.getElementById('ticketDetailContent');
@@ -1025,7 +1094,7 @@
 
         // 加载电影选项
         function loadMovieOptions(selectId) {
-            axios.get('http://localhost:8080/api/movies')
+            axios.get(`${API_BASE}/api/movies`)
                 .then(response => {
                     const movies = response.data.data || [];
                     const select = document.getElementById(selectId);
@@ -1041,7 +1110,7 @@
 
         // 加载影院选项
         function loadCinemaOptions(selectId) {
-            axios.get('http://localhost:8080/api/cinemas')
+            axios.get(`${API_BASE}/api/cinemas`)
                 .then(response => {
                     const cinemas = response.data.data || [];
                     const select = document.getElementById(selectId);
@@ -1062,7 +1131,7 @@
                 return;
             }
             
-            axios.get(`http://localhost:8080/api/cinemas/${cinemaId}/halls`)
+            axios.get(`${API_BASE}/api/cinemas/${cinemaId}/halls`)
                 .then(response => {
                     const halls = response.data.data || [];
                     const select = document.getElementById(selectId);
@@ -1087,6 +1156,74 @@
             modal.show();
         }
 
+        // 查看影院影厅列表
+        function viewCinemaHalls(cinemaId, cinemaName) {
+            document.getElementById('viewHallsCinemaName').textContent = `${cinemaName} - 影厅列表`;
+            // 将影院ID存储到模态框中，供删除影厅时使用
+            document.getElementById('viewHallsModal').setAttribute('data-cinema-id', cinemaId);
+            document.getElementById('viewHallsModal').setAttribute('data-cinema-name', cinemaName);
+            
+            axios.get(`${API_BASE}/api/cinemas/${cinemaId}/halls`)
+                .then(response => {
+                    const halls = response.data.data || [];
+                    const hallList = document.getElementById('hallList');
+                    hallList.innerHTML = '';
+                    
+                    if (halls.length === 0) {
+                        hallList.innerHTML = '<tr><td colspan="6" class="text-center">暂无影厅数据</td></tr>';
+                        // 如果没有影厅，3秒后自动关闭模态框
+                        setTimeout(() => {
+                            bootstrap.Modal.getInstance(document.getElementById('viewHallsModal')).hide();
+                        }, 3000);
+                    } else {
+                        halls.forEach(hall => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${hall.hallId}</td>
+                                <td>${hall.name}</td>
+                                <td>${hall.capacity}</td>
+                                <td>${hall.availableSeats || hall.capacity}</td>
+                                <td>${hall.type}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteHall(${hall.hallId}, '${hall.name}')">删除</button>
+                                </td>
+                            `;
+                            hallList.appendChild(row);
+                        });
+                    }
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewHallsModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('获取影厅列表失败:', error);
+                    alert('获取影厅列表失败，请稍后重试');
+                });
+        }
+
+        // 删除影厅
+        function deleteHall(hallId, hallName) {
+            if (confirm(`确定要删除影厅"${hallName}"吗？\n注意：删除影厅将同时删除相关的座位和场次信息！`)) {
+                axios.delete(`${API_BASE}/api/halls/${hallId}`)
+                    .then(response => {
+                        alert('删除影厅成功');
+                        // 从模态框属性中获取影院信息
+                        const modal = document.getElementById('viewHallsModal');
+                        const cinemaId = modal.getAttribute('data-cinema-id');
+                        const cinemaName = modal.getAttribute('data-cinema-name');
+                        
+                        // 刷新影厅列表
+                        viewCinemaHalls(cinemaId, cinemaName);
+                        // 刷新影院列表
+                        loadCinemas();
+                    })
+                    .catch(error => {
+                        console.error('删除影厅失败:', error);
+                        alert('删除影厅失败，请稍后重试');
+                    });
+            }
+        }
+
         // 保存影厅
         document.getElementById('saveHallBtn').onclick = async function() {
             const cinemaId = document.getElementById('addHallCinemaId').value;
@@ -1098,7 +1235,7 @@
                 return;
             }
             try {
-                const res = await fetch('http://localhost:8080/api/halls', {
+                const res = await fetch(`${API_BASE}/api/halls`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cinemaId, name, capacity, type })
@@ -1145,7 +1282,7 @@
                     totalHalls: 0
                 };
                 
-                axios.post('http://localhost:8080/api/cinemas', cinema)
+                axios.post(`${API_BASE}/api/cinemas`, cinema)
                     .then(response => {
                         alert('添加影院成功');
                         bootstrap.Modal.getInstance(document.getElementById('addCinemaModal')).hide();
@@ -1167,7 +1304,7 @@
                     contact: document.getElementById('editCinemaContact').value
                 };
                 
-                axios.put('http://localhost:8080/api/cinemas', cinema)
+                axios.put(`${API_BASE}/api/cinemas`, cinema)
                     .then(response => {
                         alert('更新影院成功');
                         bootstrap.Modal.getInstance(document.getElementById('editCinemaModal')).hide();
@@ -1188,11 +1325,11 @@
                     duration: parseInt(document.getElementById('movieDuration').value),
                     releaseDate: document.getElementById('movieReleaseDate').value,
                     posterUrl: document.getElementById('moviePoster').value,
-                    status: 'SHOWING',
+                    status: document.getElementById('movieStatus').value,
                     description: ''
                 };
                 
-                axios.post('http://localhost:8080/api/movies', movie)
+                axios.post(`${API_BASE}/api/movies`, movie)
                     .then(response => {
                         alert('添加电影成功');
                         bootstrap.Modal.getInstance(document.getElementById('addMovieModal')).hide();
@@ -1214,10 +1351,11 @@
                     actors: document.getElementById('editMovieActors').value,
                     duration: parseInt(document.getElementById('editMovieDuration').value),
                     releaseDate: document.getElementById('editMovieReleaseDate').value,
-                    posterUrl: document.getElementById('editMoviePoster').value
+                    posterUrl: document.getElementById('editMoviePoster').value,
+                    status: document.getElementById('editMovieStatus').value
                 };
                 
-                axios.put('http://localhost:8080/api/movies', movie)
+                axios.put(`${API_BASE}/api/movies`, movie)
                     .then(response => {
                         alert('更新电影成功');
                         bootstrap.Modal.getInstance(document.getElementById('editMovieModal')).hide();
@@ -1239,7 +1377,7 @@
                     ticketPrice: parseFloat(document.getElementById('showtimeTicketPrice').value)
                 };
                 
-                axios.post('http://localhost:8080/api/showtimes', showtime)
+                axios.post(`${API_BASE}/api/showtimes`, showtime)
                     .then(response => {
                         alert('添加场次成功');
                         bootstrap.Modal.getInstance(document.getElementById('addShowtimeModal')).hide();
@@ -1263,7 +1401,7 @@
                     ticketPrice: parseFloat(document.getElementById('editShowtimeTicketPrice').value)
                 };
                 
-                axios.put('http://localhost:8080/api/showtimes', showtime)
+                axios.put(`${API_BASE}/api/showtimes`, showtime)
                     .then(response => {
                         alert('更新场次成功');
                         bootstrap.Modal.getInstance(document.getElementById('editShowtimeModal')).hide();

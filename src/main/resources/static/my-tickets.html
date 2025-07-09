@@ -535,6 +535,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const API_BASE = 'http://118.178.229.132:9001';
         // DOM元素
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('userAvatar');
@@ -651,7 +652,7 @@
                 `;
                 
                 // 构建查询参数
-                let url = `http://localhost:8080/api/users/${currentUser.userId}/tickets`;
+                let url = `${API_BASE}/api/users/${currentUser.userId}/tickets`;
                 const params = [];
                 
                 if (status) {
@@ -806,7 +807,7 @@
         // 处理支付票务
         async function handlePayTicket(ticketId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/pay?paymentMethod=BALANCE`, {
+                const response = await fetch(`${API_BASE}/api/tickets/${ticketId}/pay?paymentMethod=BALANCE`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -830,7 +831,7 @@
         // 处理取消票务
         async function handleCancelTicket(ticketId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/cancel`, {
+                const response = await fetch(`${API_BASE}/api/tickets/${ticketId}/cancel`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -860,7 +861,7 @@
         // 新增：支付/退款后刷新用户信息
         async function refreshUserInfoAfterAction() {
             try {
-                const response = await fetch(`http://localhost:8080/api/users/info?userId=${currentUser.userId}`, {
+                const response = await fetch(`${API_BASE}/api/users/info?userId=${currentUser.userId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }

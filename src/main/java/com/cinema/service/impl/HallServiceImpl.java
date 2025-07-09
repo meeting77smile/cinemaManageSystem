@@ -5,10 +5,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cinema.common.exception.BusinessException;
 import com.cinema.entity.Hall;
+import com.cinema.entity.Seat;
+import com.cinema.entity.Showtime;
 import com.cinema.mapper.HallMapper;
 import com.cinema.service.CinemaService;
 import com.cinema.service.HallService;
+import com.cinema.service.SeatService;
+import com.cinema.service.ShowtimeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,6 +28,14 @@ public class HallServiceImpl extends ServiceImpl<HallMapper, Hall> implements Ha
 
     @Autowired
     private CinemaService cinemaService;
+
+    @Autowired
+    @Lazy
+    private SeatService seatService;
+
+    @Autowired
+    @Lazy
+    private ShowtimeService showtimeService;
 
     @Override
     public Page<Hall> pageHalls(Page<Hall> page, Integer cinemaId, String name) {
@@ -90,6 +103,18 @@ public class HallServiceImpl extends ServiceImpl<HallMapper, Hall> implements Ha
         if (hall == null) {
             throw new BusinessException("影厅不存在");
         }
+        
+        // 删除影厅相关的座位
+        LambdaQueryWrapper<Seat> seatWrapper = new LambdaQueryWrapper<>();
+        seatWrapper.eq(Seat::getHallId, id);
+        seatService.remove(seatWrapper);
+        
+        // 删除影厅相关的场次
+        LambdaQueryWrapper<Showtime> showtimeWrapper = new LambdaQueryWrapper<>();
+        showtimeWrapper.eq(Showtime::getHallId, id);
+        showtimeService.remove(showtimeWrapper);
+        
+        // 删除影厅本身
         return removeById(id);
     }
 }

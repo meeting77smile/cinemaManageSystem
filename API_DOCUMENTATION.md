@@ -1,5 +1,7 @@
 # 影院管理系统API文档
 
+具体内容请在运行后端项目之后访问（9001为后端项目运行时的端口号）：http://localhost:9001/doc.html
+
 ## 目录
 
 - [1. 概述](#1-概述)
@@ -792,4 +794,6 @@ curl -X GET "http://localhost:8080/api/movies/ending" \
 ```json
 {
   "code": 501,
-  "message": "座位不存在",
+  "message": "座位不存在"
+}
+```

@@ -507,6 +507,7 @@
     </footer>
 
     <script>
+        const API_BASE = 'http://localhost:8080';
         // DOM元素
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('userAvatar');
@@ -617,7 +618,7 @@
                 const token = localStorage.getItem('token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
-                const response = await fetch('http://localhost:8080/api/movies', {
+                const response = await fetch(`${API_BASE}/api/movies`, {
                     mode: 'cors',
                     headers
                 });
@@ -642,7 +643,7 @@
                 const token = localStorage.getItem('token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
-                const response = await fetch('http://localhost:8080/api/movies/showing', {
+                const response = await fetch(`${API_BASE}/api/movies/showing`, {
                     mode: 'cors',
                     headers
                 });
@@ -667,7 +668,7 @@
                 const token = localStorage.getItem('token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
                 
-                const response = await fetch('http://localhost:8080/api/movies/ending', {
+                const response = await fetch(`${API_BASE}/api/movies/ending`, {
                     mode: 'cors',
                     headers
                 });

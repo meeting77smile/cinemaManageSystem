@@ -384,7 +384,7 @@
                 loginBtn.disabled = true;
                 loginBtn.textContent = '登录中...';
                 
-                const response = await fetch(`http://localhost:8080/api/users/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
+                const response = await fetch(`http://118.178.229.132:9001/api/users/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
                     method: 'POST',
                     mode: 'cors'
                 });
@@ -438,7 +438,7 @@
                 registerBtn.disabled = true;
                 registerBtn.textContent = '注册中...';
                 
-                const response = await fetch('http://localhost:8080/api/users/register', {
+                const response = await fetch('http://118.178.229.132:9001/api/users/register', {
                     method: 'POST',
                     mode: 'cors',
                     headers: {

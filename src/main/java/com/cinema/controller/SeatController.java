@@ -75,4 +75,16 @@ public class SeatController {
             return Result.error("删除失败");
         }
     }
+
+    @ApiOperation("自动选座")
+    @GetMapping("/auto-select")
+    public Result<Seat> autoSelectSeat(
+            @ApiParam("场次ID") @RequestParam Integer showtimeId) {
+        Seat seat = seatService.autoSelectSeat(showtimeId);
+        if (seat != null) {
+            return Result.success(seat);
+        } else {
+            return Result.error("没有可用座位");
+        }
+    }
 }

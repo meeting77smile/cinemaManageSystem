@@ -166,4 +166,16 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, Seat> implements Se
         
         return lockResult;
     }
+
+    @Override
+    public Seat autoSelectSeat(Integer showtimeId) {
+        // 获取该场次所有可用座位
+        List<Seat> availableSeats = baseMapper.getAvailableSeatsByShowtime(showtimeId);
+        if (availableSeats == null || availableSeats.isEmpty()) {
+            return null;
+        }
+        // 随机选一个
+        int idx = (int) (Math.random() * availableSeats.size());
+        return availableSeats.get(idx);
+    }
 }
