@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cinema_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 2054865827
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# 日志配置
+logging:
+  level:
+    com.cinema: debug  # 设置项目包的日志级别为debug
+    com.cinema.mapper: debug  # 特别关注mapper层的日志
+    com.cinema.controller: debug  # 特别关注控制器层的日志
+    com.cinema.service: debug  # 特别关注服务层的日志
+  
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.cinema.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    # 显示SQL语句
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+knife4j:
+  enable: true
+  setting:
+    language: zh-CN
+
+server:
+  port: 8080
+
+# JWT配置
+jwt:
+  secret: cinema_manage_system_secret_key
+  expiration: 86400000  # 24小时

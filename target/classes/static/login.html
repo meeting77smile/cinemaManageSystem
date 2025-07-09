@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录/注册 - 影院管理系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            color: #e94560;
+            letter-spacing: 2px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #e94560;
+            border-bottom: 2px solid #e94560;
+        }
+        
+        .form-container {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-group .error {
+            color: #e94560;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #d13354;
+        }
+        
+        .btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .form-footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* 提示消息样式 */
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: #2ecc71;
+            border: 1px solid #27ae60;
+        }
+        
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>影院管理系统</h1>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" id="login-tab">登录</div>
+            <div class="tab" id="register-tab">注册</div>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <!-- 登录表单 -->
+        <div class="form-container" id="login-form">
+            <div class="form-group">
+                <label for="login-username">用户名</label>
+                <input type="text" id="login-username" placeholder="请输入用户名">
+                <div class="error" id="login-username-error">请输入用户名</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" placeholder="请输入密码">
+                <div class="error" id="login-password-error">请输入密码</div>
+            </div>
+            
+            <button class="btn" id="login-btn">登录</button>
+            
+            <div class="form-footer">
+                还没有账号？<a href="#" id="to-register">立即注册</a>
+            </div>
+        </div>
+        
+        <!-- 注册表单 -->
+        <div class="form-container" id="register-form" style="display: none;">
+            <div class="form-group">
+                <label for="register-username">用户名</label>
+                <input type="text" id="register-username" placeholder="请输入用户名">
+                <div class="error" id="register-username-error">用户名长度应为3-20个字符</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password">密码</label>
+                <input type="password" id="register-password" placeholder="请输入密码">
+                <div class="error" id="register-password-error">密码长度应为6-20个字符</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-confirm-password">确认密码</label>
+                <input type="password" id="register-confirm-password" placeholder="请再次输入密码">
+                <div class="error" id="register-confirm-password-error">两次输入的密码不一致</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-email">邮箱</label>
+                <input type="email" id="register-email" placeholder="请输入邮箱">
+                <div class="error" id="register-email-error">请输入有效的邮箱地址</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-phone">手机号</label>
+                <input type="tel" id="register-phone" placeholder="请输入手机号">
+                <div class="error" id="register-phone-error">请输入有效的手机号</div>
+            </div>
+            
+            <button class="btn" id="register-btn">注册</button>
+            
+            <div class="form-footer">
+                已有账号？<a href="#" id="to-login">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const toRegister = document.getElementById('to-register');
+        const toLogin = document.getElementById('to-login');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const message = document.getElementById('message');
+
+        // 切换到注册表单
+        function showRegisterForm() {
+            loginTab.classList.remove('active');
+            registerTab.classList.add('active');
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        }
+
+        // 切换到登录表单
+        function showLoginForm() {
+            registerTab.classList.remove('active');
+            loginTab.classList.add('active');
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'message ' + type;
+            message.style.display = 'block';
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        // 表单验证
+        function validateLoginForm() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            let isValid = true;
+            
+            if (!username) {
+                document.getElementById('login-username-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('login-username-error').style.display = 'none';
+            }
+            
+            if (!password) {
+                document.getElementById('login-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('login-password-error').style.display = 'none';
+            }
+            
+            return isValid;
+        }
+
+        function validateRegisterForm() {
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const email = document.getElementById('register-email').value.trim();
+            const phone = document.getElementById('register-phone').value.trim();
+            let isValid = true;
+            
+            // 用户名验证
+            if (!username || username.length < 3 || username.length > 20) {
+                document.getElementById('register-username-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-username-error').style.display = 'none';
+            }
+            
+            // 密码验证
+            if (!password || password.length < 6 || password.length > 20) {
+                document.getElementById('register-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-password-error').style.display = 'none';
+            }
+            
+            // 确认密码验证
+            if (password !== confirmPassword) {
+                document.getElementById('register-confirm-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-confirm-password-error').style.display = 'none';
+            }
+            
+            // 邮箱验证
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                document.getElementById('register-email-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-email-error').style.display = 'none';
+            }
+            
+            // 手机号验证
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!phone || !phoneRegex.test(phone)) {
+                document.getElementById('register-phone-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-phone-error').style.display = 'none';
+            }
+            
+            return isValid;
+        }
+
+        // 登录处理
+        async function handleLogin() {
+            if (!validateLoginForm()) return;
+            
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                loginBtn.disabled = true;
+                loginBtn.textContent = '登录中...';
+                
+                const response = await fetch(`http://localhost:8080/api/users/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, {
+                    method: 'POST',
+                    mode: 'cors'
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 登录成功
+                    showMessage('登录成功，正在跳转...', 'success');
+                    
+                    // 保存用户信息和token到localStorage
+                    localStorage.setItem('userInfo', JSON.stringify(result.data.user));
+                    localStorage.setItem('token', result.data.token);
+                    
+                    // 输出用户角色信息到控制台以便调试
+                    console.log('用户角色:', result.data.user.role);
+                    
+                    // 根据用户角色跳转到不同页面
+                    setTimeout(() => {
+                        // 使用大小写不敏感的比较，并确保角色值存在
+                        const userRole = (result.data.user.role || '').toUpperCase();
+                        if (userRole === 'ADMIN') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
+                } else {
+                    // 登录失败
+                    showMessage(result.message || '用户名或密码错误', 'error');
+                }
+            } catch (error) {
+                showMessage('登录失败，请稍后再试', 'error');
+                console.error('登录错误:', error);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = '登录';
+            }
+        }
+
+        // 注册处理
+        async function handleRegister() {
+            if (!validateRegisterForm()) return;
+            
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value;
+            const email = document.getElementById('register-email').value.trim();
+            const phone = document.getElementById('register-phone').value.trim();
+            
+            try {
+                registerBtn.disabled = true;
+                registerBtn.textContent = '注册中...';
+                
+                const response = await fetch('http://localhost:8080/api/users/register', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        email,
+                        phone
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 注册成功
+                    showMessage('注册成功，请登录', 'success');
+                    
+                    // 清空注册表单
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                    document.getElementById('register-confirm-password').value = '';
+                    document.getElementById('register-email').value = '';
+                    document.getElementById('register-phone').value = '';
+                    
+                    // 切换到登录表单
+                    setTimeout(() => {
+                        showLoginForm();
+                    }, 1000);
+                } else {
+                    // 注册失败
+                    showMessage(result.message || '注册失败，请稍后再试', 'error');
+                }
+            } catch (error) {
+                showMessage('注册失败，请稍后再试', 'error');
+                console.error('注册错误:', error);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = '注册';
+            }
+        }
+
+        // 事件监听
+        loginTab.addEventListener('click', showLoginForm);
+        registerTab.addEventListener('click', showRegisterForm);
+        toRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterForm();
+        });
+        toLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+        loginBtn.addEventListener('click', handleLogin);
+        registerBtn.addEventListener('click', handleRegister);
+
+        // 检查是否已登录
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            if (token && userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    // 根据用户角色跳转到不同页面
+                    const userRole = (user.role || '').toUpperCase();
+                    if (userRole === 'ADMIN') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    // 解析用户信息失败，清除localStorage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                }
+            }
+        }
+
+        // 页面加载时检查登录状态
+        window.addEventListener('DOMContentLoaded', checkLogin);
+    </script>
+</body>
+</html>

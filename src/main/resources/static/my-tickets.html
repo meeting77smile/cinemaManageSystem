@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 影院管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .nav-link.active {
+            background-color: #e94560;
+            color: #fff;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 150px;
+            display: none;
+            z-index: 101;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #444;
+            margin: 5px 0;
+        }
+        
+        .login-btn {
+            padding: 8px 15px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 主内容区样式 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .primary-btn {
+            background-color: #3498db;
+            color: #fff;
+        }
+        
+        .primary-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .success-btn {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+        
+        .success-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .danger-btn {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        
+        .danger-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background-color: rgba(40, 40, 70, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .card-content {
+            margin-bottom: 15px;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #444;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #e94560;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* 状态标签样式 */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .status-active {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+        
+        .status-inactive {
+            background-color: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+        
+        .status-banned {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(233, 69, 96, 0.3);
+            border-radius: 50%;
+            border-top-color: #e94560;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 消息提示 */
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .message.success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #27ae60;
+        }
+        
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #c0392b;
+        }
+        
+        .message.info {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid #2980b9;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        /* 页脚样式 */
+        .footer {
+            background-color: #0a0a14;
+            padding: 40px 30px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e94560;
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">影院管理系统</a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="cinemas.html" class="nav-link">影院</a>
+            <a href="movies.html" class="nav-link">电影</a>
+        </div>
+        
+        <div class="user-actions">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">用户名</span>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">个人中心</a>
+                    <a href="my-tickets.html" class="dropdown-item">我的订单</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+                </div>
+            </div>
+            
+            <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+        </div>
+    </nav>
+    
+    <!-- 主内容区 -->
+    <div class="container">
+        <div id="messageContainer"></div>
+        
+        <div class="page-header">
+            <h1 class="page-title">我的订单</h1>
+            <div class="page-actions">
+                <button class="action-btn primary-btn" id="refreshBtn">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>刷新</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">订单筛选</div>
+            </div>
+            <div class="card-content">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ticketStatus">订单状态</label>
+                        <select id="ticketStatus">
+                            <option value="">全部</option>
+                            <option value="UNPAID">待支付</option>
+                            <option value="PAID">已支付</option>
+                            <option value="CANCELED">已取消</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketSort">排序方式</label>
+                        <select id="ticketSort">
+                            <option value="time_desc">购买时间（降序）</option>
+                            <option value="time_asc">购买时间（升序）</option>
+                            <option value="price_desc">价格（降序）</option>
+                            <option value="price_asc">价格（升序）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="action-btn primary-btn" id="searchBtn">
+                        <i class="bi bi-search"></i>
+                        <span>搜索</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ticketsContainer">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">关于我们</h3>
+                <div class="footer-links">
+                    <a href="about.html" class="footer-link">公司简介</a>
+                    <a href="contact.html" class="footer-link">联系我们</a>
+                    <a href="jobs.html" class="footer-link">招聘信息</a>
+                    <a href="privacy.html" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">帮助中心</h3>
+                <div class="footer-links">
+                    <a href="faq.html" class="footer-link">常见问题</a>
+                    <a href="guide.html" class="footer-link">购票指南</a>
+                    <a href="refund.html" class="footer-link">退票说明</a>
+                    <a href="payment.html" class="footer-link">支付方式</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">商务合作</h3>
+                <div class="footer-links">
+                    <a href="advertising.html" class="footer-link">广告合作</a>
+                    <a href="venue.html" class="footer-link">场地租赁</a>
+                    <a href="group.html" class="footer-link">团体票务</a>
+                    <a href="cooperation.html" class="footer-link">合作提案</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 影院管理系统 版权所有</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // DOM元素
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const usernameElement = document.getElementById('username');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const messageContainer = document.getElementById('messageContainer');
+        const ticketsContainer = document.getElementById('ticketsContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const searchBtn = document.getElementById('searchBtn');
+        const ticketStatus = document.getElementById('ticketStatus');
+        const ticketSort = document.getElementById('ticketSort');
+        
+        // 当前用户信息
+        let currentUser = null;
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfoData = localStorage.getItem('userInfo');
+            
+            if (token && userInfoData) {
+                try {
+                    const user = JSON.parse(userInfoData);
+                    
+                    // 显示用户信息
+                    userInfo.style.display = 'flex';
+                    loginBtn.style.display = 'none';
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                    
+                    // 保存当前用户信息
+                    currentUser = user;
+                    
+                    // 加载订单列表
+                    loadTickets();
+                    
+                    return user;
+                } catch (error) {
+                    console.error('解析用户信息失败:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    
+                    // 跳转到登录页面
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                    
+                    return null;
+                }
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'block';
+                
+                // 跳转到登录页面
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                
+                return null;
+            }
+        }
+        
+        // 用户下拉菜单
+        userInfo.addEventListener('click', function(e) {
+            userDropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 清除localStorage中的用户信息和token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            
+            // 跳转到登录页面
+            window.location.href = 'login.html';
+        });
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            
+            messageContainer.innerHTML = '';
+            messageContainer.appendChild(message);
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }
+        
+        // 加载订单列表
+        async function loadTickets() {
+            if (!currentUser) return;
+            
+            const status = ticketStatus.value;
+            const sort = ticketSort.value;
+            
+            try {
+                // 显示加载中
+                ticketsContainer.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                `;
+                
+                // 构建查询参数
+                let url = `http://localhost:8080/api/users/${currentUser.userId}/tickets`;
+                const params = [];
+                
+                if (status) {
+                    params.push(`status=${status}`);
+                }
+                
+                if (sort) {
+                    params.push(`sort=${sort}`);
+                }
+                
+                if (params.length > 0) {
+                    url += '?' + params.join('&');
+                }
+                
+                // 获取订单列表
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    renderTickets(result.data);
+                } else {
+                    showMessage('获取订单列表失败: ' + result.message, 'error');
+                    ticketsContainer.innerHTML = `
+                        <div class="card">
+                            <div class="card-content" style="text-align: center;">
+                                <p>加载订单失败，请稍后再试</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载订单错误:', error);
+                showMessage('加载订单失败，请稍后再试', 'error');
+                ticketsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="card-content" style="text-align: center;">
+                            <p>加载订单失败，请稍后再试</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // 渲染订单列表
+        function renderTickets(tickets) {
+            if (!tickets || tickets.length === 0) {
+                ticketsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="card-content" style="text-align: center;">
+                            <p>暂无订单记录</p>
+                            <a href="movies.html" class="action-btn primary-btn" style="display: inline-flex; margin-top: 15px;">
+                                <i class="bi bi-film"></i>
+                                <span>去购票</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            tickets.forEach(ticket => {
+                const statusClass = ticket.status === 'PAID' ? 'status-active' : 
+                                   (ticket.status === 'UNPAID' ? 'status-inactive' : 'status-banned');
+                const statusText = ticket.status === 'PAID' ? '已支付' : 
+                                  (ticket.status === 'UNPAID' ? '待支付' : '已取消');
+                
+                html += `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">${ticket.movieTitle}</div>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>影院</label>
+                                    <input type="text" value="${ticket.cinemaName}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>影厅</label>
+                                    <input type="text" value="${ticket.hallName}" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>座位</label>
+                                    <input type="text" value="${ticket.seatRow}排${ticket.seatNumber}号" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>放映时间</label>
+                                    <input type="text" value="${formatDateTime(ticket.startTime)}" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>价格</label>
+                                    <input type="text" value="¥${ticket.price.toFixed(2)}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>购买时间</label>
+                                    <input type="text" value="${formatDateTime(ticket.purchaseTime)}" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            ${ticket.status === 'UNPAID' ? `
+                                <button class="action-btn success-btn pay-btn" data-ticket-id="${ticket.ticketId}">
+                                    <i class="bi bi-credit-card"></i>
+                                    <span>支付</span>
+                                </button>
+                                <button class="action-btn danger-btn cancel-btn" data-ticket-id="${ticket.ticketId}">
+                                    <i class="bi bi-x-circle"></i>
+                                    <span>取消</span>
+                                </button>
+                            ` : ''}
+                            ${ticket.status === 'PAID' ? `
+                                <button class="action-btn danger-btn cancel-btn" data-ticket-id="${ticket.ticketId}">
+                                    <i class="bi bi-x-circle"></i>
+                                    <span>退票</span>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            ticketsContainer.innerHTML = html;
+            
+            // 添加事件监听
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const ticketId = this.getAttribute('data-ticket-id');
+                    handlePayTicket(ticketId);
+                });
+            });
+            
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const ticketId = this.getAttribute('data-ticket-id');
+                    handleCancelTicket(ticketId);
+                });
+            });
+        }
+        
+        // 处理支付票务
+        async function handlePayTicket(ticketId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/pay?paymentMethod=BALANCE`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    showMessage('支付成功', 'success');
+                    await refreshUserInfoAfterAction(); // 新增：支付后强制刷新用户信息
+                    loadTickets();
+                } else {
+                    showMessage('支付失败: ' + result.message, 'error');
+                    loadTickets(); // 支付失败也刷新订单，去除异常票据
+                }
+            } catch (error) {
+                console.error('支付错误:', error);
+                showMessage('支付失败，请稍后再试', 'error');
+            }
+        }
+        
+        // 处理取消票务
+        async function handleCancelTicket(ticketId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/tickets/${ticketId}/cancel`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    showMessage('取消成功', 'success');
+                    // 只要有balance字段就更新本地余额
+                    if (result.data && result.data.balance !== undefined) {
+                        currentUser.balance = result.data.balance;
+                        localStorage.setItem('userInfo', JSON.stringify(currentUser));
+                    }
+                    await refreshUserInfoAfterAction(); // 新增：退票后强制刷新用户信息
+                    loadTickets();
+                } else {
+                    showMessage('取消失败: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('取消错误:', error);
+                showMessage('取消失败，请稍后再试', 'error');
+            }
+        }
+        
+        // 新增：支付/退款后刷新用户信息
+        async function refreshUserInfoAfterAction() {
+            try {
+                const response = await fetch(`http://localhost:8080/api/users/info?userId=${currentUser.userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    currentUser = result.data;
+                    localStorage.setItem('userInfo', JSON.stringify(currentUser));
+                }
+            } catch (e) {}
+        }
+        
+        // 格式化日期时间
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return '-';
+            
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 刷新订单列表
+        refreshBtn.addEventListener('click', loadTickets);
+        
+        // 搜索订单
+        searchBtn.addEventListener('click', loadTickets);
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态
+            checkLogin();
+        });
+    </script>

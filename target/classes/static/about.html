@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - 影院管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .nav-link.active {
+            background-color: #e94560;
+            color: #fff;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 150px;
+            display: none;
+            z-index: 101;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #444;
+            margin: 5px 0;
+        }
+        
+        .login-btn {
+            padding: 8px 15px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 主内容区样式 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        /* 关于我们内容样式 */
+        .about-section {
+            margin-bottom: 40px;
+        }
+        
+        .about-section h2 {
+            font-size: 24px;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        
+        .about-section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .about-card {
+            background-color: rgba(40, 40, 70, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .team-member {
+            background-color: rgba(40, 40, 70, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        
+        .team-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .team-position {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        
+        .team-bio {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* 页脚样式 */
+        .footer {
+            background-color: #0a0a14;
+            padding: 40px 30px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e94560;
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">影院管理系统</a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="cinemas.html" class="nav-link">影院</a>
+            <a href="movies.html" class="nav-link">电影</a>
+        </div>
+        
+        <div class="user-actions">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">用户名</span>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">个人中心</a>
+                    <a href="my-tickets.html" class="dropdown-item">我的订单</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+                </div>
+            </div>
+            
+            <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+        </div>
+    </nav>
+    
+    <!-- 主内容区 -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">关于我们</h1>
+        </div>
+        
+        <div class="about-card">
+            <div class="about-section">
+                <h2>公司简介</h2>
+                <p>影院管理系统是一家致力于为电影院提供全方位管理解决方案的科技公司。我们成立于2020年，总部位于北京，目前已在全国多个城市设立分支机构。</p>
+                <p>我们的使命是通过先进的技术和创新的服务，帮助电影院提升管理效率，优化用户体验，实现数字化转型。我们相信，科技的力量可以让电影院的运营更加智能化、人性化，为观众带来更好的观影体验。</p>
+                <p>截至目前，我们已经为全国超过200家电影院提供了管理系统服务，覆盖了超过1000万的电影观众。我们的系统每天处理超过10万笔交易，为电影院创造了可观的经济效益。</p>
+            </div>
+        </div>
+        
+        <div class="about-card">
+            <div class="about-section">
+                <h2>我们的优势</h2>
+                <p><strong>全面的管理功能：</strong>我们的系统涵盖了电影院运营的各个方面，包括影片管理、排片管理、座位管理、票务管理、会员管理等，为电影院提供一站式解决方案。</p>
+                <p><strong>先进的技术支持：</strong>我们采用最新的技术架构，确保系统的稳定性、安全性和可扩展性。我们的技术团队由一群经验丰富的工程师组成，他们不断探索新技术，为系统注入新的活力。</p>
+                <p><strong>优质的客户服务：</strong>我们提供7*24小时的客户服务，确保电影院在使用过程中遇到的问题能够得到及时解决。我们的客服团队经过专业培训，能够快速响应客户需求。</p>
+                <p><strong>个性化的定制服务：</strong>我们深知每家电影院都有其独特的需求，因此我们提供个性化的定制服务，根据电影院的具体情况，量身打造最适合的解决方案。</p>
+            </div>
+        </div>
+        
+        <div class="about-card">
+            <div class="about-section">
+                <h2>我们的团队</h2>
+                <p>我们的团队由一群充满激情和创造力的年轻人组成，他们来自不同的背景，但都有一个共同的目标：通过技术创新，改变电影院的管理方式，提升观众的观影体验。</p>
+                
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="team-avatar">张</div>
+                        <div class="team-name">张明</div>
+                        <div class="team-position">创始人 & CEO</div>
+                        <div class="team-bio">曾在多家知名互联网公司担任高管，拥有丰富的管理经验和行业洞察力。他创立影院管理系统的初衷是希望通过技术创新，帮助传统电影院实现数字化转型。</div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="team-avatar">李</div>
+                        <div class="team-name">李华</div>
+                        <div class="team-position">CTO</div>
+                        <div class="team-bio">拥有超过10年的软件开发经验，精通多种编程语言和技术框架。他带领技术团队不断探索新技术，为系统注入新的活力。</div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="team-avatar">王</div>
+                        <div class="team-name">王芳</div>
+                        <div class="team-position">产品总监</div>
+                        <div class="team-bio">曾在多家知名互联网公司担任产品经理，对用户体验和产品设计有着独到的见解。她致力于打造简单易用、功能强大的产品。</div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="team-avatar">赵</div>
+                        <div class="team-name">赵强</div>
+                        <div class="team-position">市场总监</div>
+                        <div class="team-bio">拥有丰富的市场营销经验，曾成功策划多个大型营销活动。他负责公司的品牌建设和市场推广，让更多的电影院了解并使用我们的系统。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="about-card">
+            <div class="about-section">
+                <h2>联系我们</h2>
+                <p><strong>地址：</strong>北京市海淀区中关村科技园区</p>
+                <p><strong>电话：</strong>010-12345678</p>
+                <p><strong>邮箱：</strong>info@cinemamanage.com</p>
+                <p><strong>工作时间：</strong>周一至周五 9:00-18:00</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">关于我们</h3>
+                <div class="footer-links">
+                    <a href="about.html" class="footer-link">公司简介</a>
+                    <a href="contact.html" class="footer-link">联系我们</a>
+                    <a href="jobs.html" class="footer-link">招聘信息</a>
+                    <a href="privacy.html" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">帮助中心</h3>
+                <div class="footer-links">
+                    <a href="faq.html" class="footer-link">常见问题</a>
+                    <a href="guide.html" class="footer-link">购票指南</a>
+                    <a href="refund.html" class="footer-link">退票说明</a>
+                    <a href="payment.html" class="footer-link">支付方式</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">商务合作</h3>
+                <div class="footer-links">
+                    <a href="advertising.html" class="footer-link">广告合作</a>
+                    <a href="venue.html" class="footer-link">场地租赁</a>
+                    <a href="group.html" class="footer-link">团体票务</a>
+                    <a href="cooperation.html" class="footer-link">合作提案</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 影院管理系统 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM元素
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const usernameElement = document.getElementById('username');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfoData = localStorage.getItem('userInfo');
+            
+            if (token && userInfoData) {
+                try {
+                    const user = JSON.parse(userInfoData);
+                    
+                    // 显示用户信息
+                    userInfo.style.display = 'flex';
+                    loginBtn.style.display = 'none';
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                    
+                    return user;
+                } catch (error) {
+                    console.error('解析用户信息失败:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    
+                    return null;
+                }
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'block';
+                
+                return null;
+            }
+        }
+        
+        // 用户下拉菜单
+        userInfo.addEventListener('click', function(e) {
+            userDropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 清除localStorage中的用户信息和token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            
+            // 跳转到登录页面
+            window.location.href = 'login.html';
+        });
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态
+            checkLogin();
+        });
+    </script>
+</body>
+</html>

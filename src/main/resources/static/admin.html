@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影院管理系统 - 管理员控制台</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card-counter {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+            height: 120px;
+        }
+        
+        .card-counter:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .card-counter i {
+            font-size: 4em;
+            opacity: 0.8;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+        
+        .card-counter .count-numbers {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 32px;
+            display: block;
+            font-weight: bold;
+        }
+        
+        .card-counter .count-name {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-style: italic;
+            text-transform: capitalize;
+            opacity: 1;
+            display: block;
+            font-size: 18px;
+            z-index: 10;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .primary {
+            background-color: #007bff;
+            color: #FFF;
+        }
+        
+        .danger {
+            background-color: #ef5350;
+            color: #FFF;
+        }
+        
+        .success {
+            background-color: #66bb6a;
+            color: #FFF;
+        }
+        
+        .info {
+            background-color: #26c6da;
+            color: #FFF;
+        }
+        
+        .warning {
+            background-color: #ffb74d;
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">影院管理系统 - 管理员控制台</a>
+            <div class="d-flex text-white">
+                <span class="me-2">管理员</span>
+                <a href="#" id="logoutBtn" class="text-white text-decoration-none">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="bi bi-speedometer2 me-2"></i>仪表盘
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cinemas-tab" data-bs-toggle="tab" data-bs-target="#cinemas" type="button" role="tab">
+                    <i class="bi bi-building me-2"></i>影院管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="movies-tab" data-bs-toggle="tab" data-bs-target="#movies" type="button" role="tab">
+                    <i class="bi bi-film me-2"></i>电影管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="showtimes-tab" data-bs-toggle="tab" data-bs-target="#showtimes" type="button" role="tab">
+                    <i class="bi bi-calendar-event me-2"></i>场次管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                    <i class="bi bi-people me-2"></i>用户管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tickets-tab" data-bs-toggle="tab" data-bs-target="#tickets" type="button" role="tab">
+                    <i class="bi bi-ticket-perforated me-2"></i>订单管理
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabContent">
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">仪表盘</h1>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshStats">
+                        <i class="bi bi-arrow-clockwise"></i> 刷新数据
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card-counter primary">
+                            <i class="bi bi-people"></i>
+                            <span class="count-numbers" id="userCount">0</span>
+                            <span class="count-name">用户总数</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-counter danger">
+                            <i class="bi bi-film"></i>
+                            <span class="count-numbers" id="movieCount">0</span>
+                            <span class="count-name">电影总数</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-counter success">
+                            <i class="bi bi-building"></i>
+                            <span class="count-numbers" id="cinemaCount">0</span>
+                            <span class="count-name">影院总数</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card-counter info">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span class="count-numbers" id="ticketCount">0</span>
+                            <span class="count-name">订单总数</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-counter warning">
+                            <i class="bi bi-calendar-check"></i>
+                            <span class="count-numbers" id="todayTicketCount">0</span>
+                            <span class="count-name">今日订单数</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-counter primary">
+                            <i class="bi bi-currency-yen"></i>
+                            <span class="count-numbers" id="todaySales">0</span>
+                            <span class="count-name">今日销售额</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="cinemas" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">影院管理</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCinemaModal">
+                        <i class="bi bi-plus-circle me-2"></i>添加影院
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>影院名称</th>
+                                <th>地址</th>
+                                <th>联系电话</th>
+                                <th>影厅数量</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cinemaList">
+                            <!-- 影院列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="movies" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">电影管理</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
+                        <i class="bi bi-plus-circle me-2"></i>添加电影
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>电影名称</th>
+                                <th>导演</th>
+                                <th>演员</th>
+                                <th>时长</th>
+                                <th>上映日期</th>
+                                <th>海报</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movieList">
+                            <!-- 电影列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="showtimes" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">场次管理</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addShowtimeModal">
+                        <i class="bi bi-plus-circle me-2"></i>添加场次
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>电影名称</th>
+                                <th>影院名称</th>
+                                <th>影厅</th>
+                                <th>放映时间</th>
+                                <th>票价</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="showtimeList">
+                            <!-- 场次列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="users" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">用户管理</h1>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>邮箱</th>
+                                <th>电话</th>
+                                <th>注册时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList">
+                            <!-- 用户列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tickets" role="tabpanel">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">订单管理</h1>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>订单ID</th>
+                                <th>用户</th>
+                                <th>电影</th>
+                                <th>影院</th>
+                                <th>场次时间</th>
+                                <th>座位</th>
+                                <th>票价</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketList">
+                            <!-- 订单列表将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加影院模态框 -->
+    <div class="modal fade" id="addCinemaModal" tabindex="-1" aria-labelledby="addCinemaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCinemaModalLabel">添加影院</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCinemaForm">
+                        <div class="mb-3">
+                            <label for="cinemaName" class="form-label">影院名称</label>
+                            <input type="text" class="form-control" id="cinemaName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cinemaAddress" class="form-label">地址</label>
+                            <input type="text" class="form-control" id="cinemaAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cinemaContact" class="form-label">联系电话</label>
+                            <input type="text" class="form-control" id="cinemaContact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveCinemaBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加电影模态框 -->
+    <div class="modal fade" id="addMovieModal" tabindex="-1" aria-labelledby="addMovieModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMovieModalLabel">添加电影</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMovieForm">
+                        <div class="mb-3">
+                            <label for="movieTitle" class="form-label">电影名称</label>
+                            <input type="text" class="form-control" id="movieTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movieDirector" class="form-label">导演</label>
+                            <input type="text" class="form-control" id="movieDirector" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movieActors" class="form-label">演员</label>
+                            <input type="text" class="form-control" id="movieActors" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movieDuration" class="form-label">时长 (分钟)</label>
+                            <input type="number" class="form-control" id="movieDuration" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movieReleaseDate" class="form-label">上映日期</label>
+                            <input type="date" class="form-control" id="movieReleaseDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="moviePoster" class="form-label">海报 URL</label>
+                            <input type="url" class="form-control" id="moviePoster" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveMovieBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加场次模态框 -->
+    <div class="modal fade" id="addShowtimeModal" tabindex="-1" aria-labelledby="addShowtimeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addShowtimeModalLabel">添加场次</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addShowtimeForm">
+                        <div class="mb-3">
+                            <label for="showtimeMovieId" class="form-label">电影</label>
+                            <select class="form-control" id="showtimeMovieId" required>
+                                <!-- 电影选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="showtimeCinemaId" class="form-label">影院</label>
+                            <select class="form-control" id="showtimeCinemaId" required>
+                                <!-- 影院选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="showtimeHallId" class="form-label">影厅</label>
+                            <select class="form-control" id="showtimeHallId" required>
+                                <!-- 影厅选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="showtimeStartTime" class="form-label">放映时间</label>
+                            <input type="datetime-local" class="form-control" id="showtimeStartTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="showtimeTicketPrice" class="form-label">票价</label>
+                            <input type="number" class="form-control" id="showtimeTicketPrice" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveShowtimeBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑影院模态框 -->
+    <div class="modal fade" id="editCinemaModal" tabindex="-1" aria-labelledby="editCinemaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCinemaModalLabel">编辑影院</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCinemaForm">
+                        <input type="hidden" id="editCinemaId">
+                        <div class="mb-3">
+                            <label for="editCinemaName" class="form-label">影院名称</label>
+                            <input type="text" class="form-control" id="editCinemaName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCinemaAddress" class="form-label">地址</label>
+                            <input type="text" class="form-control" id="editCinemaAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCinemaContact" class="form-label">联系电话</label>
+                            <input type="text" class="form-control" id="editCinemaContact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="updateCinemaBtn">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑电影模态框 -->
+    <div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMovieModalLabel">编辑电影</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMovieForm">
+                        <input type="hidden" id="editMovieId">
+                        <div class="mb-3">
+                            <label for="editMovieTitle" class="form-label">电影名称</label>
+                            <input type="text" class="form-control" id="editMovieTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMovieDirector" class="form-label">导演</label>
+                            <input type="text" class="form-control" id="editMovieDirector" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMovieActors" class="form-label">演员</label>
+                            <input type="text" class="form-control" id="editMovieActors" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMovieDuration" class="form-label">时长 (分钟)</label>
+                            <input type="number" class="form-control" id="editMovieDuration" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMovieReleaseDate" class="form-label">上映日期</label>
+                            <input type="date" class="form-control" id="editMovieReleaseDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMoviePoster" class="form-label">海报 URL</label>
+                            <input type="url" class="form-control" id="editMoviePoster" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="updateMovieBtn">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑场次模态框 -->
+    <div class="modal fade" id="editShowtimeModal" tabindex="-1" aria-labelledby="editShowtimeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editShowtimeModalLabel">编辑场次</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editShowtimeForm">
+                        <input type="hidden" id="editShowtimeId">
+                        <div class="mb-3">
+                            <label for="editShowtimeMovieId" class="form-label">电影</label>
+                            <select class="form-control" id="editShowtimeMovieId" required>
+                                <!-- 电影选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editShowtimeCinemaId" class="form-label">影院</label>
+                            <select class="form-control" id="editShowtimeCinemaId" required>
+                                <!-- 影院选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editShowtimeHallId" class="form-label">影厅</label>
+                            <select class="form-control" id="editShowtimeHallId" required>
+                                <!-- 影厅选项将通过JavaScript动态加载 -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editShowtimeStartTime" class="form-label">放映时间</label>
+                            <input type="datetime-local" class="form-control" id="editShowtimeStartTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editShowtimeTicketPrice" class="form-label">票价</label>
+                            <input type="number" class="form-control" id="editShowtimeTicketPrice" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="updateShowtimeBtn">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="ticketDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ticketDetailModalLabel">订单详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="ticketDetailContent">
+                    <!-- 订单详情将通过JavaScript动态加载 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加影厅模态框 -->
+    <div class="modal fade" id="addHallModal" tabindex="-1" aria-labelledby="addHallModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addHallModalLabel">添加影厅</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addHallForm">
+                        <input type="hidden" id="addHallCinemaId">
+                        <div class="mb-3">
+                            <label for="addHallCinemaName" class="form-label">所属影院</label>
+                            <input type="text" class="form-control" id="addHallCinemaName" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addHallName" class="form-label">影厅名称</label>
+                            <input type="text" class="form-control" id="addHallName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addHallCapacity" class="form-label">座位容量</label>
+                            <input type="number" class="form-control" id="addHallCapacity" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addHallType" class="form-label">影厅类型</label>
+                            <input type="text" class="form-control" id="addHallType" placeholder="如：IMAX/普通/4D" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveHallBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // 获取统计数据
+        function loadStatistics() {
+            axios.get('http://localhost:8080/api/admin/statistics')
+                .then(response => {
+                    const data = response.data.data;
+                    document.getElementById('userCount').textContent = data.userCount || 0;
+                    document.getElementById('movieCount').textContent = data.movieCount || 0;
+                    document.getElementById('cinemaCount').textContent = data.cinemaCount || 0;
+                    document.getElementById('ticketCount').textContent = data.ticketCount || 0;
+                    document.getElementById('todayTicketCount').textContent = data.todayTicketCount || 0;
+                    document.getElementById('todaySales').textContent = (data.todaySales || 0).toFixed(2);
+                })
+                .catch(error => {
+                    console.error('获取统计数据失败:', error);
+                });
+        }
+
+        // 加载影院列表
+        function loadCinemas() {
+            axios.get('http://localhost:8080/api/cinemas')
+                .then(response => {
+                    const cinemas = response.data.data || [];
+                    const cinemaList = document.getElementById('cinemaList');
+                    cinemaList.innerHTML = '';
+                    
+                    cinemas.forEach(cinema => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${cinema.cinemaId}</td>
+                            <td>${cinema.name}</td>
+                            <td>${cinema.address}</td>
+                            <td>${cinema.contact}</td>
+                            <td>${cinema.hallCount || 0}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editCinema(${cinema.cinemaId})">编辑</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCinema(${cinema.cinemaId})">删除</button>
+                                <button class="btn btn-sm btn-success" onclick="openAddHallModal(${cinema.cinemaId}, '${cinema.name}')">添加影厅</button>
+                            </td>
+                        `;
+                        cinemaList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取影院列表失败:', error);
+                });
+        }
+
+        // 加载电影列表
+        function loadMovies() {
+            axios.get('http://localhost:8080/api/movies')
+                .then(response => {
+                    const movies = response.data.data || [];
+                    const movieList = document.getElementById('movieList');
+                    movieList.innerHTML = '';
+                    
+                    movies.forEach(movie => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${movie.movieId}</td>
+                            <td>${movie.title}</td>
+                            <td>${movie.director}</td>
+                            <td>${movie.actors}</td>
+                            <td>${movie.duration}分钟</td>
+                            <td>${movie.releaseDate}</td>
+                            <td><img src="${movie.posterUrl || 'https://via.placeholder.com/50'}" alt="Poster" style="max-width: 50px;"></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editMovie(${movie.movieId})">编辑</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteMovie(${movie.movieId})">删除</button>
+                            </td>
+                        `;
+                        movieList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取电影列表失败:', error);
+                });
+        }
+
+        // 加载场次列表
+        function loadShowtimes() {
+            axios.get('http://localhost:8080/api/showtimes/page?current=1&size=50')
+                .then(response => {
+                    const showtimes = response.data.data.records || [];
+                    const showtimeList = document.getElementById('showtimeList');
+                    showtimeList.innerHTML = '';
+                    
+                    showtimes.forEach(showtime => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${showtime.showtimeId}</td>
+                            <td>${showtime.movieTitle || ''}</td>
+                            <td>${showtime.cinemaName || ''}</td>
+                            <td>${showtime.hallName || ''}</td>
+                            <td>${showtime.startTime}</td>
+                            <td>￥${showtime.ticketPrice || showtime.price || 0}</td>
+                            <td>${getShowtimeStatus(showtime)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editShowtime(${showtime.showtimeId})">编辑</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteShowtime(${showtime.showtimeId})">删除</button>
+                            </td>
+                        `;
+                        showtimeList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取场次列表失败:', error);
+                });
+        }
+
+        // 加载用户列表
+        function loadUsers() {
+            axios.get('http://localhost:8080/api/admin/users')
+                .then(response => {
+                    const users = response.data.data || [];
+                    const userList = document.getElementById('userList');
+                    userList.innerHTML = '';
+                    
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        const statusBadge = user.status === 'ACTIVE' 
+                            ? '<span class="badge bg-success">正常</span>' 
+                            : (user.status === 'INACTIVE' 
+                                ? '<span class="badge bg-warning">未激活</span>' 
+                                : '<span class="badge bg-danger">禁用</span>');
+                        
+                        row.innerHTML = `
+                            <td>${user.userId}</td>
+                            <td>${user.username}</td>
+                            <td>${user.email || '-'}</td>
+                            <td>${user.phone || '-'}</td>
+                            <td>${user.registerTime}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning me-1" onclick="toggleUserStatus(${user.userId}, '${user.status}')">${user.status === 'ACTIVE' ? '禁用' : '启用'}</button>
+                            </td>
+                        `;
+                        userList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取用户列表失败:', error);
+                });
+        }
+
+        // 加载订单列表
+        function loadTickets() {
+            axios.get('http://localhost:8080/api/tickets/page?current=1&size=50')
+                .then(response => {
+                    const tickets = response.data.data.records || [];
+                    const ticketList = document.getElementById('ticketList');
+                    ticketList.innerHTML = '';
+                    
+                    tickets.forEach(ticket => {
+                        const row = document.createElement('tr');
+                        const statusBadge = ticket.status === 'PAID' 
+                            ? '<span class="badge bg-success">已支付</span>' 
+                            : (ticket.status === 'UNPAID' 
+                                ? '<span class="badge bg-warning">未支付</span>' 
+                                : '<span class="badge bg-danger">已取消</span>');
+                        
+                        row.innerHTML = `
+                            <td>${ticket.ticketId}</td>
+                            <td>用户ID: ${ticket.userId}</td>
+                            <td>${ticket.movieTitle || '未知'}</td>
+                            <td>${ticket.cinemaName || '未知'}</td>
+                            <td>${ticket.startTime || '未知'}</td>
+                            <td>${ticket.seatRow ? ticket.seatRow + '排' : ''}${ticket.seatNumber ? ticket.seatNumber + '号' : ''}</td>
+                            <td>￥${ticket.price}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="viewTicketDetail(${ticket.ticketId})">查看</button>
+                            </td>
+                        `;
+                        ticketList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取订单列表失败:', error);
+                });
+        }
+
+        // 场次状态判断函数
+        function getShowtimeStatus(showtime) {
+            const now = new Date();
+            let startTimeStr = showtime.startTime;
+            let endTimeStr = showtime.endTime;
+            
+            if (startTimeStr && startTimeStr.includes('T')) {
+                startTimeStr = startTimeStr.replace('T', ' ');
+            }
+            if (endTimeStr && endTimeStr.includes('T')) {
+                endTimeStr = endTimeStr.replace('T', ' ');
+            }
+            
+            const startTime = new Date(startTimeStr);
+            let endTime;
+            
+            if (endTimeStr) {
+                endTime = new Date(endTimeStr);
+            } else {
+                const movieDuration = showtime.movieDuration || 120;
+                endTime = new Date(startTime.getTime() + movieDuration * 60 * 1000);
+            }
+
+            if (isNaN(startTime.getTime())) {
+                return '<span class="badge bg-danger">时间异常</span>';
+            }
+            
+            if (startTime > now) {
+                return '<span class="badge bg-primary">未开始</span>';
+            } else if (endTime && endTime < now) {
+                return '<span class="badge bg-secondary">已结束</span>';
+            } else {
+                return '<span class="badge bg-success">进行中</span>';
+            }
+        }
+
+        // 切换用户状态
+        function toggleUserStatus(userId, currentStatus) {
+            const newStatus = currentStatus === 'ACTIVE' ? 'BANNED' : 'ACTIVE';
+            const action = newStatus === 'ACTIVE' ? '启用' : '禁用';
+            
+            if (confirm(`确定要${action}该用户吗？`)) {
+                axios.put(`http://localhost:8080/api/admin/users/${userId}/status?status=${newStatus}`)
+                    .then(response => {
+                        alert(`${action}用户成功`);
+                        loadUsers();
+                    })
+                    .catch(error => {
+                        console.error(`${action}用户失败:`, error);
+                        alert(`${action}用户失败，请稍后重试`);
+                    });
+            }
+        }
+
+        // 删除影院
+        function deleteCinema(cinemaId) {
+            if (confirm('确定要删除该影院吗？')) {
+                axios.delete(`http://localhost:8080/api/cinemas/${cinemaId}`)
+                    .then(response => {
+                        alert('删除影院成功');
+                        loadCinemas();
+                    })
+                    .catch(error => {
+                        console.error('删除影院失败:', error);
+                        alert('删除影院失败，请稍后重试');
+                    });
+            }
+        }
+
+        // 删除电影
+        function deleteMovie(movieId) {
+            if (confirm('确定要删除该电影吗？')) {
+                axios.delete(`http://localhost:8080/api/movies/${movieId}`)
+                    .then(response => {
+                        alert('删除电影成功');
+                        loadMovies();
+                    })
+                    .catch(error => {
+                        console.error('删除电影失败:', error);
+                        alert('删除电影失败，请稍后重试');
+                    });
+            }
+        }
+
+        // 删除场次
+        function deleteShowtime(showtimeId) {
+            if (confirm('确定要删除该场次吗？')) {
+                axios.delete(`http://localhost:8080/api/showtimes/${showtimeId}`)
+                    .then(response => {
+                        alert('删除场次成功');
+                        loadShowtimes();
+                    })
+                    .catch(error => {
+                        console.error('删除场次失败:', error);
+                        alert('删除场次失败，请稍后重试');
+                    });
+            }
+        }
+
+        // 编辑影院
+        function editCinema(cinemaId) {
+            axios.get(`http://localhost:8080/api/cinemas/${cinemaId}`)
+                .then(response => {
+                    const cinema = response.data.data;
+                    document.getElementById('editCinemaId').value = cinema.cinemaId;
+                    document.getElementById('editCinemaName').value = cinema.name;
+                    document.getElementById('editCinemaAddress').value = cinema.address;
+                    document.getElementById('editCinemaContact').value = cinema.contact;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editCinemaModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('获取影院详情失败:', error);
+                    alert('获取影院详情失败，请稍后重试');
+                });
+        }
+
+        // 编辑电影
+        function editMovie(movieId) {
+            axios.get(`http://localhost:8080/api/movies/${movieId}`)
+                .then(response => {
+                    const movie = response.data.data;
+                    document.getElementById('editMovieId').value = movie.movieId;
+                    document.getElementById('editMovieTitle').value = movie.title;
+                    document.getElementById('editMovieDirector').value = movie.director;
+                    document.getElementById('editMovieActors').value = movie.actors || '';
+                    document.getElementById('editMovieDuration').value = movie.duration;
+                    document.getElementById('editMovieReleaseDate').value = movie.releaseDate;
+                    document.getElementById('editMoviePoster').value = movie.posterUrl || '';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editMovieModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('获取电影详情失败:', error);
+                    alert('获取电影详情失败，请稍后重试');
+                });
+        }
+
+        // 编辑场次
+        function editShowtime(showtimeId) {
+            axios.get(`http://localhost:8080/api/showtimes/${showtimeId}`)
+                .then(response => {
+                    const showtime = response.data.data;
+                    document.getElementById('editShowtimeId').value = showtime.showtimeId;
+                    document.getElementById('editShowtimeMovieId').value = showtime.movieId;
+                    document.getElementById('editShowtimeCinemaId').value = showtime.cinemaId;
+                    document.getElementById('editShowtimeHallId').value = showtime.hallId;
+                    
+                    // 格式化时间
+                    const startTime = new Date(showtime.startTime);
+                    const formattedTime = startTime.toISOString().slice(0, 16);
+                    document.getElementById('editShowtimeStartTime').value = formattedTime;
+                    
+                    document.getElementById('editShowtimeTicketPrice').value = showtime.ticketPrice || showtime.price;
+                    
+                    // 加载选项数据
+                    loadMovieOptions('editShowtimeMovieId');
+                    loadCinemaOptions('editShowtimeCinemaId');
+                    loadHallOptions('editShowtimeHallId', showtime.cinemaId);
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editShowtimeModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('获取场次详情失败:', error);
+                    alert('获取场次详情失败，请稍后重试');
+                });
+        }
+
+        // 查看订单详情
+        function viewTicketDetail(ticketId) {
+            axios.get(`http://localhost:8080/api/tickets/${ticketId}`)
+                .then(response => {
+                    const ticket = response.data.data;
+                    const detailContent = document.getElementById('ticketDetailContent');
+                    
+                    detailContent.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>订单信息</h6>
+                                <p><strong>订单ID:</strong> ${ticket.ticketId}</p>
+                                <p><strong>用户ID:</strong> ${ticket.userId}</p>
+                                <p><strong>场次ID:</strong> ${ticket.showtimeId}</p>
+                                <p><strong>座位ID:</strong> ${ticket.seatId}</p>
+                                <p><strong>票价:</strong> ￥${ticket.price}</p>
+                                <p><strong>状态:</strong> ${getTicketStatusText(ticket.status)}</p>
+                                <p><strong>创建时间:</strong> ${ticket.createTime}</p>
+                                <p><strong>支付时间:</strong> ${ticket.payTime || '未支付'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>电影信息</h6>
+                                <p><strong>电影ID:</strong> ${ticket.movieId || '未知'}</p>
+                                <p><strong>影院ID:</strong> ${ticket.cinemaId || '未知'}</p>
+                                <p><strong>影厅ID:</strong> ${ticket.hallId || '未知'}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('ticketDetailModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('获取订单详情失败:', error);
+                    alert('获取订单详情失败，请稍后重试');
+                });
+        }
+
+        // 获取订单状态文本
+        function getTicketStatusText(status) {
+            switch(status) {
+                case 'PAID': return '已支付';
+                case 'UNPAID': return '未支付';
+                case 'CANCELLED': return '已取消';
+                default: return status;
+            }
+        }
+
+        // 加载电影选项
+        function loadMovieOptions(selectId) {
+            axios.get('http://localhost:8080/api/movies')
+                .then(response => {
+                    const movies = response.data.data || [];
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">请选择电影</option>';
+                    movies.forEach(movie => {
+                        select.innerHTML += `<option value="${movie.movieId}">${movie.title}</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('获取电影列表失败:', error);
+                });
+        }
+
+        // 加载影院选项
+        function loadCinemaOptions(selectId) {
+            axios.get('http://localhost:8080/api/cinemas')
+                .then(response => {
+                    const cinemas = response.data.data || [];
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">请选择影院</option>';
+                    cinemas.forEach(cinema => {
+                        select.innerHTML += `<option value="${cinema.cinemaId}">${cinema.name}</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('获取影院列表失败:', error);
+                });
+        }
+
+        // 加载影厅选项
+        function loadHallOptions(selectId, cinemaId) {
+            if (!cinemaId) {
+                document.getElementById(selectId).innerHTML = '<option value="">请先选择影院</option>';
+                return;
+            }
+            
+            axios.get(`http://localhost:8080/api/cinemas/${cinemaId}/halls`)
+                .then(response => {
+                    const halls = response.data.data || [];
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">请选择影厅</option>';
+                    halls.forEach(hall => {
+                        select.innerHTML += `<option value="${hall.hallId}">${hall.name}</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('获取影厅列表失败:', error);
+                });
+        }
+
+        // 打开添加影厅模态框
+        function openAddHallModal(cinemaId, cinemaName) {
+            document.getElementById('addHallCinemaId').value = cinemaId;
+            document.getElementById('addHallCinemaName').value = cinemaName;
+            document.getElementById('addHallName').value = '';
+            document.getElementById('addHallCapacity').value = '';
+            document.getElementById('addHallType').value = '';
+            var modal = new bootstrap.Modal(document.getElementById('addHallModal'));
+            modal.show();
+        }
+
+        // 保存影厅
+        document.getElementById('saveHallBtn').onclick = async function() {
+            const cinemaId = document.getElementById('addHallCinemaId').value;
+            const name = document.getElementById('addHallName').value.trim();
+            const capacity = document.getElementById('addHallCapacity').value;
+            const type = document.getElementById('addHallType').value.trim();
+            if (!name || !capacity || !type) {
+                alert('请填写完整信息');
+                return;
+            }
+            try {
+                const res = await fetch('http://localhost:8080/api/halls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cinemaId, name, capacity, type })
+                });
+                const result = await res.json();
+                if (result.code === 200) {
+                    alert('添加成功');
+                    // 关闭模态框
+                    bootstrap.Modal.getInstance(document.getElementById('addHallModal')).hide();
+                    // 刷新影院/影厅列表
+                    loadCinemas();
+                } else {
+                    alert('添加失败：' + result.message);
+                }
+            } catch (e) {
+                alert('网络错误，添加失败');
+            }
+        };
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载统计数据
+            loadStatistics();
+            
+            // 绑定刷新按钮事件
+            document.getElementById('refreshStats').addEventListener('click', loadStatistics);
+            
+            // 绑定退出按钮事件
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('确定要退出吗？')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                }
+            });
+            
+            // 绑定添加影院按钮事件
+            document.getElementById('saveCinemaBtn').addEventListener('click', function() {
+                const cinema = {
+                    name: document.getElementById('cinemaName').value,
+                    address: document.getElementById('cinemaAddress').value,
+                    contact: document.getElementById('cinemaContact').value,
+                    totalHalls: 0
+                };
+                
+                axios.post('http://localhost:8080/api/cinemas', cinema)
+                    .then(response => {
+                        alert('添加影院成功');
+                        bootstrap.Modal.getInstance(document.getElementById('addCinemaModal')).hide();
+                        document.getElementById('addCinemaForm').reset();
+                        loadCinemas();
+                    })
+                    .catch(error => {
+                        console.error('添加影院失败:', error);
+                        alert('添加影院失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定更新影院按钮事件
+            document.getElementById('updateCinemaBtn').addEventListener('click', function() {
+                const cinema = {
+                    cinemaId: parseInt(document.getElementById('editCinemaId').value),
+                    name: document.getElementById('editCinemaName').value,
+                    address: document.getElementById('editCinemaAddress').value,
+                    contact: document.getElementById('editCinemaContact').value
+                };
+                
+                axios.put('http://localhost:8080/api/cinemas', cinema)
+                    .then(response => {
+                        alert('更新影院成功');
+                        bootstrap.Modal.getInstance(document.getElementById('editCinemaModal')).hide();
+                        loadCinemas();
+                    })
+                    .catch(error => {
+                        console.error('更新影院失败:', error);
+                        alert('更新影院失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定添加电影按钮事件
+            document.getElementById('saveMovieBtn').addEventListener('click', function() {
+                const movie = {
+                    title: document.getElementById('movieTitle').value,
+                    director: document.getElementById('movieDirector').value,
+                    actors: document.getElementById('movieActors').value,
+                    duration: parseInt(document.getElementById('movieDuration').value),
+                    releaseDate: document.getElementById('movieReleaseDate').value,
+                    posterUrl: document.getElementById('moviePoster').value,
+                    status: 'SHOWING',
+                    description: ''
+                };
+                
+                axios.post('http://localhost:8080/api/movies', movie)
+                    .then(response => {
+                        alert('添加电影成功');
+                        bootstrap.Modal.getInstance(document.getElementById('addMovieModal')).hide();
+                        document.getElementById('addMovieForm').reset();
+                        loadMovies();
+                    })
+                    .catch(error => {
+                        console.error('添加电影失败:', error);
+                        alert('添加电影失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定更新电影按钮事件
+            document.getElementById('updateMovieBtn').addEventListener('click', function() {
+                const movie = {
+                    movieId: parseInt(document.getElementById('editMovieId').value),
+                    title: document.getElementById('editMovieTitle').value,
+                    director: document.getElementById('editMovieDirector').value,
+                    actors: document.getElementById('editMovieActors').value,
+                    duration: parseInt(document.getElementById('editMovieDuration').value),
+                    releaseDate: document.getElementById('editMovieReleaseDate').value,
+                    posterUrl: document.getElementById('editMoviePoster').value
+                };
+                
+                axios.put('http://localhost:8080/api/movies', movie)
+                    .then(response => {
+                        alert('更新电影成功');
+                        bootstrap.Modal.getInstance(document.getElementById('editMovieModal')).hide();
+                        loadMovies();
+                    })
+                    .catch(error => {
+                        console.error('更新电影失败:', error);
+                        alert('更新电影失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定添加场次按钮事件
+            document.getElementById('saveShowtimeBtn').addEventListener('click', function() {
+                const showtime = {
+                    movieId: parseInt(document.getElementById('showtimeMovieId').value),
+                    cinemaId: parseInt(document.getElementById('showtimeCinemaId').value),
+                    hallId: parseInt(document.getElementById('showtimeHallId').value),
+                    startTime: document.getElementById('showtimeStartTime').value,
+                    ticketPrice: parseFloat(document.getElementById('showtimeTicketPrice').value)
+                };
+                
+                axios.post('http://localhost:8080/api/showtimes', showtime)
+                    .then(response => {
+                        alert('添加场次成功');
+                        bootstrap.Modal.getInstance(document.getElementById('addShowtimeModal')).hide();
+                        document.getElementById('addShowtimeForm').reset();
+                        loadShowtimes();
+                    })
+                    .catch(error => {
+                        console.error('添加场次失败:', error);
+                        alert('添加场次失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定更新场次按钮事件
+            document.getElementById('updateShowtimeBtn').addEventListener('click', function() {
+                const showtime = {
+                    showtimeId: parseInt(document.getElementById('editShowtimeId').value),
+                    movieId: parseInt(document.getElementById('editShowtimeMovieId').value),
+                    cinemaId: parseInt(document.getElementById('editShowtimeCinemaId').value),
+                    hallId: parseInt(document.getElementById('editShowtimeHallId').value),
+                    startTime: document.getElementById('editShowtimeStartTime').value,
+                    ticketPrice: parseFloat(document.getElementById('editShowtimeTicketPrice').value)
+                };
+                
+                axios.put('http://localhost:8080/api/showtimes', showtime)
+                    .then(response => {
+                        alert('更新场次成功');
+                        bootstrap.Modal.getInstance(document.getElementById('editShowtimeModal')).hide();
+                        loadShowtimes();
+                    })
+                    .catch(error => {
+                        console.error('更新场次失败:', error);
+                        alert('更新场次失败，请稍后重试');
+                    });
+            });
+            
+            // 绑定影院选择变化事件
+            document.getElementById('showtimeCinemaId').addEventListener('change', function() {
+                const cinemaId = this.value;
+                loadHallOptions('showtimeHallId', cinemaId);
+            });
+            
+            document.getElementById('editShowtimeCinemaId').addEventListener('change', function() {
+                const cinemaId = this.value;
+                loadHallOptions('editShowtimeHallId', cinemaId);
+            });
+            
+            // 绑定标签页切换事件
+            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(event) {
+                    const target = event.target.getAttribute('data-bs-target');
+                    switch(target) {
+                        case '#cinemas':
+                            loadCinemas();
+                            break;
+                        case '#movies':
+                            loadMovies();
+                            break;
+                        case '#showtimes':
+                            loadShowtimes();
+                            // 加载场次相关的选项数据
+                            loadMovieOptions('showtimeMovieId');
+                            loadCinemaOptions('showtimeCinemaId');
+                            break;
+                        case '#users':
+                            loadUsers();
+                            break;
+                        case '#tickets':
+                            loadTickets();
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

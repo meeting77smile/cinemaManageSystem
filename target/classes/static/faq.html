@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常见问题 - 影院管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .nav-link.active {
+            background-color: #e94560;
+            color: #fff;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 150px;
+            display: none;
+            z-index: 101;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #444;
+            margin: 5px 0;
+        }
+        
+        .login-btn {
+            padding: 8px 15px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 主内容区样式 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        /* FAQ内容样式 */
+        .faq-section {
+            margin-bottom: 40px;
+        }
+        
+        .faq-section h2 {
+            font-size: 24px;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        
+        .faq-card {
+            background-color: rgba(40, 40, 70, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .faq-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+        }
+        
+        .faq-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .faq-question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-question:hover {
+            color: #e94560;
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #ccc;
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .faq-answer.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .faq-answer p {
+            margin-bottom: 10px;
+        }
+        
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .faq-search {
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #e94560;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .faq-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .category-btn {
+            padding: 8px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            border-color: #e94560;
+        }
+        
+        .category-btn.active {
+            background-color: #e94560;
+            color: #fff;
+            border-color: #e94560;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* 页脚样式 */
+        .footer {
+            background-color: #0a0a14;
+            padding: 40px 30px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e94560;
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .faq-categories {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .category-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">影院管理系统</a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="cinemas.html" class="nav-link">影院</a>
+            <a href="movies.html" class="nav-link">电影</a>
+        </div>
+        
+        <div class="user-actions">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">用户名</span>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">个人中心</a>
+                    <a href="my-tickets.html" class="dropdown-item">我的订单</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+                </div>
+            </div>
+            
+            <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+        </div>
+    </nav>
+    
+    <!-- 主内容区 -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">常见问题</h1>
+        </div>
+        
+        <div class="faq-search">
+            <input type="text" class="search-input" id="faqSearch" placeholder="搜索问题...">
+        </div>
+        
+        <div class="faq-categories">
+            <button class="category-btn active" data-category="all">全部</button>
+            <button class="category-btn" data-category="account">账户相关</button>
+            <button class="category-btn" data-category="ticket">购票相关</button>
+            <button class="category-btn" data-category="refund">退票相关</button>
+            <button class="category-btn" data-category="payment">支付相关</button>
+            <button class="category-btn" data-category="other">其他问题</button>
+        </div>
+        
+        <div class="faq-card">
+            <div class="faq-section" id="accountFaq">
+                <h2>账户相关</h2>
+                
+                <div class="faq-item" data-category="account">
+                    <div class="faq-question">
+                        <span>如何注册账户？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>您可以通过以下步骤注册账户：</p>
+                        <p>1. 点击网站右上角的"登录 / 注册"按钮</p>
+                        <p>2. 在登录页面点击"注册新账户"</p>
+                        <p>3. 填写用户名、密码和邮箱等信息</p>
+                        <p>4. 点击"注册"按钮完成注册</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="account">
+                    <div class="faq-question">
+                        <span>忘记密码怎么办？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>如果您忘记了密码，可以通过以下步骤重置密码：</p>
+                        <p>1. 点击登录页面的"忘记密码"链接</p>
+                        <p>2. 输入您注册时使用的邮箱</p>
+                        <p>3. 系统会向您的邮箱发送一封包含重置密码链接的邮件</p>
+                        <p>4. 点击邮件中的链接，设置新密码即可</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="account">
+                    <div class="faq-question">
+                        <span>如何修改个人信息？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>登录后，您可以在个人中心修改您的个人信息：</p>
+                        <p>1. 点击右上角的用户名，选择"个人中心"</p>
+                        <p>2. 在个人中心页面，点击"编辑信息"按钮</p>
+                        <p>3. 修改您的邮箱、手机号等信息</p>
+                        <p>4. 点击"保存"按钮完成修改</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-section" id="ticketFaq">
+                <h2>购票相关</h2>
+                
+                <div class="faq-item" data-category="ticket">
+                    <div class="faq-question">
+                        <span>如何购买电影票？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>您可以通过以下步骤购买电影票：</p>
+                        <p>1. 在首页或电影页面选择您想看的电影</p>
+                        <p>2. 点击电影海报或"购票"按钮进入电影详情页</p>
+                        <p>3. 选择影院、场次和座位</p>
+                        <p>4. 确认订单信息并支付</p>
+                        <p>5. 支付成功后，您可以在"我的订单"中查看电影票信息</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="ticket">
+                    <div class="faq-question">
+                        <span>可以选择座位吗？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>是的，我们的系统支持座位选择功能。在购票流程中，您可以看到影厅的座位图，已售出的座位会被标记为灰色，您可以选择任何可用的座位。</p>
+                        <p>此外，我们还提供了自动选座功能，系统会根据当前影厅的座位情况，为您推荐最佳的座位。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="ticket">
+                    <div class="faq-question">
+                        <span>购票成功后，如何取票？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>购票成功后，您有以下几种取票方式：</p>
+                        <p>1. 手机出示：在"我的订单"中找到对应的电影票，到影院后直接出示给工作人员即可</p>
+                        <p>2. 自助取票：在影院的自助取票机上，输入手机号和取票码，打印纸质电影票</p>
+                        <p>3. 人工窗口：到影院的售票窗口，出示身份证或手机号，工作人员会帮您打印电影票</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-section" id="refundFaq">
+                <h2>退票相关</h2>
+                
+                <div class="faq-item" data-category="refund">
+                    <div class="faq-question">
+                        <span>如何退票？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>您可以通过以下步骤退票：</p>
+                        <p>1. 登录账户，进入"我的订单"页面</p>
+                        <p>2. 找到需要退票的订单，点击"退票"按钮</p>
+                        <p>3. 确认退票信息，点击"确认退票"</p>
+                        <p>4. 系统会根据退票规则计算退款金额，并将退款返回到您的支付账户</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="refund">
+                    <div class="faq-question">
+                        <span>退票有手续费吗？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>退票是否收取手续费取决于退票的时间：</p>
+                        <p>1. 影片开场前24小时以上：不收取手续费，全额退款</p>
+                        <p>2. 影片开场前12-24小时：收取票价的10%作为手续费</p>
+                        <p>3. 影片开场前4-12小时：收取票价的20%作为手续费</p>
+                        <p>4. 影片开场前4小时内：收取票价的30%作为手续费</p>
+                        <p>5. 影片开场后：不支持退票</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="refund">
+                    <div class="faq-question">
+                        <span>退款多久能到账？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>退款到账时间取决于您的支付方式：</p>
+                        <p>1. 账户余额支付：退款会立即返回到您的账户余额中</p>
+                        <p>2. 微信支付：一般1-3个工作日内到账</p>
+                        <p>3. 支付宝支付：一般1-3个工作日内到账</p>
+                        <p>4. 银行卡支付：一般3-7个工作日内到账</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-section" id="paymentFaq">
+                <h2>支付相关</h2>
+                
+                <div class="faq-item" data-category="payment">
+                    <div class="faq-question">
+                        <span>支持哪些支付方式？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>我们支持以下支付方式：</p>
+                        <p>1. 账户余额支付</p>
+                        <p>2. 微信支付</p>
+                        <p>3. 支付宝支付</p>
+                        <p>4. 银行卡支付</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="payment">
+                    <div class="faq-question">
+                        <span>如何充值账户余额？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>您可以通过以下步骤充值账户余额：</p>
+                        <p>1. 登录账户，进入"个人中心"</p>
+                        <p>2. 点击"账户充值"选项</p>
+                        <p>3. 输入充值金额，选择支付方式</p>
+                        <p>4. 点击"确认充值"，完成支付</p>
+                        <p>充值成功后，金额会立即添加到您的账户余额中。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="payment">
+                    <div class="faq-question">
+                        <span>支付过程中遇到问题怎么办？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>如果您在支付过程中遇到问题，可以尝试以下解决方法：</p>
+                        <p>1. 检查网络连接是否正常</p>
+                        <p>2. 确认支付账户余额是否充足</p>
+                        <p>3. 尝试使用其他支付方式</p>
+                        <p>4. 刷新页面，重新进行支付</p>
+                        <p>如果问题仍然存在，请联系我们的客服人员，电话：010-12345678。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-section" id="otherFaq">
+                <h2>其他问题</h2>
+                
+                <div class="faq-item" data-category="other">
+                    <div class="faq-question">
+                        <span>影院有停车场吗？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>大部分影院都设有停车场，但具体情况因影院而异。您可以在选择影院时查看影院详情页面，了解该影院是否提供停车服务以及停车收费标准。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="other">
+                    <div class="faq-question">
+                        <span>可以带食物进影院吗？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>影院一般允许观众携带不产生强烈气味和噪音的食物进入影厅，如瓶装水、小零食等。但不建议携带有强烈气味的食物（如烧烤、麻辣烫等）和易发出声响的食物（如薯片、爆米花等）进入影厅，以免影响其他观众的观影体验。</p>
+                        <p>此外，影院内设有售卖部，提供爆米花、饮料等观影零食，您可以在影院内购买。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-category="other">
+                    <div class="faq-question">
+                        <span>如何联系客服？</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>您可以通过以下方式联系我们的客服：</p>
+                        <p>1. 客服电话：010-12345678（工作时间：周一至周五 9:00-18:00）</p>
+                        <p>2. 客服邮箱：service@cinemamanage.com</p>
+                        <p>3. 在线客服：点击网站右下角的"在线客服"按钮</p>
+                        <p>4. 填写反馈表单：在"联系我们"页面填写反馈表单</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">关于我们</h3>
+                <div class="footer-links">
+                    <a href="about.html" class="footer-link">公司简介</a>
+                    <a href="contact.html" class="footer-link">联系我们</a>
+                    <a href="jobs.html" class="footer-link">招聘信息</a>
+                    <a href="privacy.html" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">帮助中心</h3>
+                <div class="footer-links">
+                    <a href="faq.html" class="footer-link">常见问题</a>
+                    <a href="guide.html" class="footer-link">购票指南</a>
+                    <a href="refund.html" class="footer-link">退票说明</a>
+                    <a href="payment.html" class="footer-link">支付方式</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">商务合作</h3>
+                <div class="footer-links">
+                    <a href="advertising.html" class="footer-link">广告合作</a>
+                    <a href="venue.html" class="footer-link">场地租赁</a>
+                    <a href="group.html" class="footer-link">团体票务</a>
+                    <a href="cooperation.html" class="footer-link">合作提案</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 影院管理系统 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM元素
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const usernameElement = document.getElementById('username');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        const faqSearch = document.getElementById('faqSearch');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfoData = localStorage.getItem('userInfo');
+            
+            if (token && userInfoData) {
+                try {
+                    const user = JSON.parse(userInfoData);
+                    
+                    // 显示用户信息
+                    userInfo.style.display = 'flex';
+                    loginBtn.style.display = 'none';
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                    
+                    return user;
+                } catch (error) {
+                    console.error('解析用户信息失败:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    
+                    return null;
+                }
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'block';
+                
+                return null;
+            }
+        }
+        
+        // 用户下拉菜单
+        userInfo.addEventListener('click', function(e) {
+            userDropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 清除localStorage中的用户信息和token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            
+            // 跳转到登录页面
+            window.location.href = 'login.html';
+        });
+        
+        // FAQ问题点击展开/收起
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const isOpen = answer.classList.contains('show');
+                
+                // 关闭所有其他答案
+                document.querySelectorAll('.faq-answer').forEach(item => {
+                    item.classList.remove('show');
+                });
+                
+                document.querySelectorAll('.faq-question').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 如果当前答案是关闭的，则打开它
+                if (!isOpen) {
+                    answer.classList.add('show');
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // 搜索功能
+        if (faqSearch) {
+            faqSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    // 如果搜索框为空，显示所有问题
+                    faqItems.forEach(item => {
+                        item.style.display = 'block';
+                    });
+                    
+                    // 重新应用分类过滤
+                    const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
+                    filterByCategory(activeCategory);
+                } else {
+                    // 根据搜索词过滤问题
+                    faqItems.forEach(item => {
+                        const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                        
+                        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        }
+        
+        // 分类过滤
+        function filterByCategory(category) {
+            if (category === 'all') {
+                faqItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+            } else {
+                faqItems.forEach(item => {
+                    if (item.getAttribute('data-category') === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 分类按钮点击事件
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                categoryBtns.forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 添加当前按钮的active类
+                this.classList.add('active');
+                
+                // 根据分类过滤问题
+                const category = this.getAttribute('data-category');
+                filterByCategory(category);
+            });
+        });
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态
+            checkLogin();
+            
+            // 默认展开第一个问题
+            if (faqQuestions.length > 0) {
+                faqQuestions[0].click();
+            }
+        });
+    </script>

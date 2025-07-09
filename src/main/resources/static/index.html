@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 影院管理系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .nav-link.active {
+            background-color: #e94560;
+            color: #fff;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 150px;
+            display: none;
+            z-index: 101;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #444;
+            margin: 5px 0;
+        }
+        
+        .login-btn {
+            padding: 8px 15px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 轮播图样式 */
+        .carousel {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        .carousel-inner {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .carousel-item.active {
+            opacity: 1;
+        }
+        
+        .carousel-caption {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            padding: 30px;
+            width: 100%;
+        }
+        
+        .carousel-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .carousel-description {
+            font-size: 16px;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+        
+        .carousel-btn {
+            padding: 10px 20px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .carousel-btn:hover {
+            background-color: #d13354;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .carousel-control {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-control:hover {
+            background-color: rgba(233, 69, 96, 0.8);
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-indicator.active {
+            background-color: #e94560;
+        }
+        
+        /* 电影列表样式 */
+        .section {
+            padding: 40px 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #e94560;
+            border-radius: 5px;
+        }
+        
+        .view-all {
+            color: #e94560;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .view-all:hover {
+            text-decoration: underline;
+        }
+        
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .movie-card {
+            background-color: #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .movie-info {
+            padding: 15px;
+        }
+        
+        .movie-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .movie-director, .movie-duration {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .movie-status.showing {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+        
+        .movie-status.ending {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        
+        .movie-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: block;
+        }
+        
+        .movie-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 页脚样式 */
+        .footer {
+            background-color: #0a0a14;
+            padding: 40px 30px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e94560;
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .nav-links {
+                order: 3;
+                width: 100%;
+                margin-top: 15px;
+                justify-content: space-between;
+            }
+            
+            .carousel {
+                height: 400px;
+            }
+            
+            .carousel-title {
+                font-size: 24px;
+            }
+            
+            .carousel-description {
+                font-size: 14px;
+            }
+            
+            .section {
+                padding: 30px 15px;
+            }
+            
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 20px;
+            }
+            
+            .movie-poster {
+                height: 225px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .carousel {
+                height: 300px;
+            }
+            
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 15px;
+            }
+            
+            .movie-poster {
+                height: 195px;
+            }
+            
+            .movie-info {
+                padding: 10px;
+            }
+            
+            .movie-title {
+                font-size: 16px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 管理员入口样式 */
+        .admin-panel {
+            display: none;
+            background-color: #e94560;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-panel:hover {
+            background-color: #d13354;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">影院管理系统</a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">首页</a>
+            <a href="cinemas.html" class="nav-link">影院</a>
+            <a href="movies.html" class="nav-link">电影</a>
+        </div>
+        
+        <div class="user-actions">
+            <a href="#" class="admin-panel" id="adminPanel">管理控制台</a>
+            
+            <!-- 已登录状态 -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">用户名</span>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">个人中心</a>
+                    <a href="my-tickets.html" class="dropdown-item">我的订单</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+                </div>
+            </div>
+            
+            <!-- 未登录状态 -->
+            <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+        </div>
+    </nav>
+    
+    <!-- 轮播图 -->
+    <div class="carousel">
+        <div class="carousel-inner" id="carouselInner">
+            <!-- 轮播项将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="carousel-indicators" id="carouselIndicators">
+            <!-- 指示器将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="carousel-controls">
+            <div class="carousel-control" id="prevBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </div>
+            <div class="carousel-control" id="nextBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 正在上映 -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">正在上映</h2>
+            <a href="movies.html?status=showing" class="view-all">查看全部</a>
+        </div>
+        
+        <div class="movie-grid" id="showingMovies">
+            <!-- 电影卡片将通过JavaScript动态生成 -->
+        </div>
+    </section>
+    
+    <!-- 即将下架 -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">即将下架</h2>
+            <a href="movies.html?status=ending" class="view-all">查看全部</a>
+        </div>
+        
+        <div class="movie-grid" id="endingMovies">
+            <!-- 电影卡片将通过JavaScript动态生成 -->
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">关于我们</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">公司简介</a>
+                    <a href="#" class="footer-link">联系我们</a>
+                    <a href="#" class="footer-link">招聘信息</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">帮助中心</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">常见问题</a>
+                    <a href="#" class="footer-link">购票指南</a>
+                    <a href="#" class="footer-link">退票说明</a>
+                    <a href="#" class="footer-link">支付方式</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">商务合作</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">广告合作</a>
+                    <a href="#" class="footer-link">场地租赁</a>
+                    <a href="#" class="footer-link">团体票务</a>
+                    <a href="#" class="footer-link">合作提案</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 影院管理系统 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM元素
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const usernameElement = document.getElementById('username');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const adminPanel = document.getElementById('adminPanel');
+        const carouselInner = document.getElementById('carouselInner');
+        const carouselIndicators = document.getElementById('carouselIndicators');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const showingMoviesContainer = document.getElementById('showingMovies');
+        const endingMoviesContainer = document.getElementById('endingMovies');
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfoData = localStorage.getItem('userInfo');
+            
+            if (token && userInfoData) {
+                try {
+                    const user = JSON.parse(userInfoData);
+                    
+                    // 显示用户信息
+                    userInfo.style.display = 'flex';
+                    loginBtn.style.display = 'none';
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                    
+                    // 如果是管理员，显示管理控制台入口
+                    if (user.role === 'ADMIN') {
+                        adminPanel.style.display = 'block';
+                    } else {
+                        adminPanel.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('解析用户信息失败:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                }
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        }
+        
+        // 用户下拉菜单
+        userInfo.addEventListener('click', function(e) {
+            userDropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 清除localStorage中的用户信息和token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            
+            // 刷新页面
+            window.location.reload();
+        });
+        
+        // 轮播图功能
+        let currentSlide = 0;
+        let slides = [];
+        let autoSlideInterval;
+        
+        function showSlide(index) {
+            // 隐藏所有轮播项
+            document.querySelectorAll('.carousel-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 移除所有指示器的active类
+            document.querySelectorAll('.carousel-indicator').forEach(indicator => {
+                indicator.classList.remove('active');
+            });
+            
+            // 显示当前轮播项
+            document.querySelector(`.carousel-item[data-index="${index}"]`).classList.add('active');
+            
+            // 激活当前指示器
+            document.querySelector(`.carousel-indicator[data-index="${index}"]`).classList.add('active');
+            
+            // 更新当前轮播项索引
+            currentSlide = index;
+        }
+        
+        function nextSlide() {
+            let nextIndex = currentSlide + 1;
+            if (nextIndex >= slides.length) {
+                nextIndex = 0;
+            }
+            showSlide(nextIndex);
+        }
+        
+        function prevSlide() {
+            let prevIndex = currentSlide - 1;
+            if (prevIndex < 0) {
+                prevIndex = slides.length - 1;
+            }
+            showSlide(prevIndex);
+        }
+        
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+        
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
+        // 初始化轮播图
+        function initCarousel(movies) {
+            // 清空轮播图内容
+            carouselInner.innerHTML = '';
+            carouselIndicators.innerHTML = '';
+            
+            // 最多显示5部电影
+            slides = movies.slice(0, 5);
+            
+            // 创建轮播项
+            slides.forEach((movie, index) => {
+                const carouselItem = document.createElement('div');
+                carouselItem.className = 'carousel-item';
+                carouselItem.dataset.index = index;
+                carouselItem.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${movie.posterUrl})`;
+                
+                const caption = document.createElement('div');
+                caption.className = 'carousel-caption';
+                
+                const title = document.createElement('h2');
+                title.className = 'carousel-title';
+                title.textContent = movie.title;
+                
+                const description = document.createElement('p');
+                description.className = 'carousel-description';
+                description.textContent = movie.description;
+                
+                const button = document.createElement('a');
+                button.className = 'carousel-btn';
+                button.href = `movie-detail.html?id=${movie.movieId}`;
+                button.textContent = '查看详情';
+                
+                caption.appendChild(title);
+                caption.appendChild(description);
+                caption.appendChild(button);
+                carouselItem.appendChild(caption);
+                carouselInner.appendChild(carouselItem);
+                
+                // 创建指示器
+                const indicator = document.createElement('div');
+                indicator.className = 'carousel-indicator';
+                indicator.dataset.index = index;
+                indicator.addEventListener('click', () => {
+                    showSlide(index);
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+                carouselIndicators.appendChild(indicator);
+            });
+            
+            // 显示第一张轮播图
+            if (slides.length > 0) {
+                showSlide(0);
+                startAutoSlide();
+            }
+        }
+        
+        // 创建电影卡片
+        function createMovieCard(movie) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            
+            const statusClass = movie.status === 'SHOWING' ? 'showing' : 'ending';
+            const statusText = movie.status === 'SHOWING' ? '正在上映' : '即将下架';
+            
+            card.innerHTML = `
+                <div class="movie-status ${statusClass}">${statusText}</div>
+                <img src="${movie.posterUrl}" alt="${movie.title}" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">${movie.title}</h3>
+                    <div class="movie-meta">
+                        <div class="movie-director">导演: ${movie.director}</div>
+                        <div class="movie-duration">${movie.duration}分钟</div>
+                    </div>
+                    <a href="movie-detail.html?id=${movie.movieId}" class="movie-btn">查看详情</a>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 获取正在上映的电影
+        async function getShowingMovies() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                
+                const response = await fetch('http://localhost:8080/api/movies/showing', {
+                    mode: 'cors',
+                    headers
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    return result.data;
+                } else {
+                    console.error('获取正在上映电影失败:', result.message);
+                    return [];
+                }
+            } catch (error) {
+                console.error('获取正在上映电影错误:', error);
+                return [];
+            }
+        }
+        
+        // 获取即将下架的电影
+        async function getEndingMovies() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                
+                const response = await fetch('http://localhost:8080/api/movies/ending', {
+                    mode: 'cors',
+                    headers
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    return result.data;
+                } else {
+                    console.error('获取即将下架电影失败:', result.message);
+                    return [];
+                }
+            } catch (error) {
+                console.error('获取即将下架电影错误:', error);
+                return [];
+            }
+        }
+        
+        // 初始化页面
+        async function initPage() {
+            // 检查登录状态
+            checkLogin();
+            
+            // 获取正在上映的电影
+            const showingMovies = await getShowingMovies();
+            
+            // 初始化轮播图
+            initCarousel(showingMovies);
+            
+            // 显示正在上映的电影
+            showingMoviesContainer.innerHTML = '';
+            if (showingMovies.length > 0) {
+                showingMovies.forEach(movie => {
+                    showingMoviesContainer.appendChild(createMovieCard(movie));
+                });
+            } else {
+                showingMoviesContainer.innerHTML = '<p>暂无正在上映的电影</p>';
+            }
+            
+            // 获取即将下架的电影
+            const endingMovies = await getEndingMovies();
+            
+            // 显示即将下架的电影
+            endingMoviesContainer.innerHTML = '';
+            if (endingMovies.length > 0) {
+                endingMovies.forEach(movie => {
+                    endingMoviesContainer.appendChild(createMovieCard(movie));
+                });
+            } else {
+                endingMoviesContainer.innerHTML = '<p>暂无即将下架的电影</p>';
+            }
+        }
+        
+        // 轮播图控制
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            stopAutoSlide();
+            startAutoSlide();
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            stopAutoSlide();
+            startAutoSlide();
+        });
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

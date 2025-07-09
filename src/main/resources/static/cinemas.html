@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影院列表 - 影院管理系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .nav-link.active {
+            background-color: #e94560;
+            color: #fff;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e94560;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 150px;
+            display: none;
+            z-index: 101;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #444;
+            margin: 5px 0;
+        }
+        
+        .login-btn {
+            padding: 8px 15px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 影院列表样式 */
+        .cinemas-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #e94560;
+            border-radius: 5px;
+        }
+        
+        .cinema-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .cinema-card {
+            background-color: #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .cinema-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .cinema-info {
+            padding: 20px;
+        }
+        
+        .cinema-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e94560;
+        }
+        
+        .cinema-address {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .cinema-contact {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .cinema-halls {
+            margin-bottom: 15px;
+        }
+        
+        .hall-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .hall-icon {
+            color: #e94560;
+        }
+        
+        .cinema-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: block;
+        }
+        
+        .cinema-btn:hover {
+            background-color: #d13354;
+        }
+        
+        /* 页脚样式 */
+        .footer {
+            background-color: #0a0a14;
+            padding: 40px 30px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e94560;
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .nav-links {
+                order: 3;
+                width: 100%;
+                margin-top: 15px;
+                justify-content: space-between;
+            }
+            
+            .cinema-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(233, 69, 96, 0.3);
+            border-radius: 50%;
+            border-top-color: #e94560;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 管理员入口样式 */
+        .admin-panel {
+            display: none;
+            background-color: #e94560;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-panel:hover {
+            background-color: #d13354;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">影院管理系统</a>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="cinemas.html" class="nav-link active">影院</a>
+            <a href="movies.html" class="nav-link">电影</a>
+        </div>
+        
+        <div class="user-actions">
+            <a href="#" class="admin-panel" id="adminPanel">管理控制台</a>
+            
+            <!-- 已登录状态 -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">用户名</span>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">个人中心</a>
+                    <a href="my-tickets.html" class="dropdown-item">我的订单</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">退出登录</a>
+                </div>
+            </div>
+            
+            <!-- 未登录状态 -->
+            <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+        </div>
+    </nav>
+    
+    <!-- 影院列表 -->
+    <div class="cinemas-container">
+        <h2 class="section-title">影院列表</h2>
+        
+        <div id="cinemasContent">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">关于我们</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">公司简介</a>
+                    <a href="#" class="footer-link">联系我们</a>
+                    <a href="#" class="footer-link">招聘信息</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">帮助中心</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">常见问题</a>
+                    <a href="#" class="footer-link">购票指南</a>
+                    <a href="#" class="footer-link">退票说明</a>
+                    <a href="#" class="footer-link">支付方式</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">商务合作</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">广告合作</a>
+                    <a href="#" class="footer-link">场地租赁</a>
+                    <a href="#" class="footer-link">团体票务</a>
+                    <a href="#" class="footer-link">合作提案</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 影院管理系统 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM元素
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const usernameElement = document.getElementById('username');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const adminPanel = document.getElementById('adminPanel');
+        const cinemasContent = document.getElementById('cinemasContent');
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            const userInfoData = localStorage.getItem('userInfo');
+            
+            if (token && userInfoData) {
+                try {
+                    const user = JSON.parse(userInfoData);
+                    
+                    // 显示用户信息
+                    userInfo.style.display = 'flex';
+                    loginBtn.style.display = 'none';
+                    usernameElement.textContent = user.username;
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                    
+                    // 如果是管理员，显示管理控制台入口
+                    if (user.role === 'ADMIN' || user.role === 'admin') {
+                        adminPanel.style.display = 'block';
+                    } else {
+                        adminPanel.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('解析用户信息失败:', error);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                }
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        }
+        
+        // 用户下拉菜单
+        userInfo.addEventListener('click', function(e) {
+            userDropdown.classList.toggle('show');
+            e.stopPropagation();
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 清除localStorage中的用户信息和token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            
+            // 刷新页面
+            window.location.reload();
+        });
+        
+        // 创建影院卡片
+        function createCinemaCard(cinema) {
+            const card = document.createElement('div');
+            card.className = 'cinema-card';
+            
+            card.innerHTML = `
+                <div class="cinema-info">
+                    <h3 class="cinema-name">${cinema.name}</h3>
+                    <div class="cinema-address">地址: ${cinema.address}</div>
+                    <div class="cinema-contact">联系电话: ${cinema.contact}</div>
+                    <div class="cinema-halls">
+                        <div class="hall-count">
+                            <span class="hall-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                                </svg>
+                            </span>
+                            <span>影厅数量: ${cinema.hallCount || '未知'}</span>
+                        </div>
+                        <div class="hall-count">
+                            <span class="hall-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 2v6h6V2H6zm12 0v6h6V2h-6zM6 14v6h6v-6H6zm12 0v6h6v-6h-6zM6 8v6h6V8H6zm12 0v6h6V8h-6z"></path>
+                                </svg>
+                            </span>
+                            <span>总座位数: ${cinema.totalSeats || '未知'}</span>
+                        </div>
+                    </div>
+                    <a href="cinema-detail.html?id=${cinema.cinemaId}" class="cinema-btn">查看详情</a>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 获取所有影院
+        async function getCinemas() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                
+                const response = await fetch('http://localhost:8080/api/cinemas', {
+                    headers
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    return result.data;
+                } else {
+                    console.error('获取影院列表失败:', result.message);
+                    return [];
+                }
+            } catch (error) {
+                console.error('获取影院列表错误:', error);
+                return [];
+            }
+        }
+        
+        // 初始化页面
+        async function initPage() {
+            // 检查登录状态
+            checkLogin();
+            
+            // 获取所有影院
+            const cinemas = await getCinemas();
+            
+            // 显示影院列表
+            cinemasContent.innerHTML = '';
+            if (cinemas.length > 0) {
+                const cinemaGrid = document.createElement('div');
+                cinemaGrid.className = 'cinema-grid';
+                
+                cinemas.forEach(cinema => {
+                    cinemaGrid.appendChild(createCinemaCard(cinema));
+                });
+                
+                cinemasContent.appendChild(cinemaGrid);
+            } else {
+                cinemasContent.innerHTML = '<p>暂无影院信息</p>';
+            }
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
